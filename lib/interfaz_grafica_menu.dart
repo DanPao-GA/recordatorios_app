@@ -66,8 +66,12 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
 
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) => const SomosLosDarts(),));
+                Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) => const SomosLosDarts()));
               },
+// el context es lo q le indica a flutter donde esta el boton, en q pantalla pues, en este caso en la
+// pantalla de menu, el siguiente es pa q cuando se presione el boton, ese context se reconstruya (s un constructor en tiempo real)
+// y sepa a que pantaklla ir, en este caso a la pantalla de SomosLosDarts, q es la pantalla de info
+
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(MediaQuery.sizeOf(context).width * 0.5, 48), // esto es para indicar que el boton va a ocupar la mitad del ancho de la pantalla, y es necesario para que el boton funcione correctamente
                 backgroundColor: AppColors.colorBase4 // esto es para indicar que el color del boton va a ser blanco, y es necesario para que el boton funcione correctamente
@@ -77,7 +81,7 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
 
             ElevatedButton(
               onPressed: () {
-                print('sdasd');
+                print('sdasd'); //esto se ve en la consola de debug, no en la terminal TT
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(MediaQuery.sizeOf(context).width * 0.5, 48), // esto es para indicar que el boton va a ocupar la mitad del ancho de la pantalla, y es necesario para que el boton funcione correctamente

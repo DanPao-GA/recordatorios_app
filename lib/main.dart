@@ -11,11 +11,11 @@ class PantallaRecordatorios extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title:'Recordatorios App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 106, 255, 223)),
         scaffoldBackgroundColor: AppColors.colorBase5,
-        //scaffoldBackgroundColor: const Color.fromARGB(255, 236, 175, 233)
       ),
       home: const InterfazGraficaMenu(title: 'Interfaz Gráfica Menu'),
     );
