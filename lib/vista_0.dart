@@ -30,7 +30,7 @@ class vista_0 extends StatefulWidget {
   const vista_0({super.key});
 
   @override
-  State<vista_0> createState() => _vista_0State();
+  State<Vista0> createState() => _Vista0State();
 }
 
 class _vista_0State extends State<vista_0> {
