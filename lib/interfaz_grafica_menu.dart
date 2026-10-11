@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 
 
 class AppColors {
@@ -109,32 +110,101 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
     );
   }
 }
-
-class SomosLosDarts extends StatefulWidget{
-
+class SomosLosDarts extends StatefulWidget {
   const SomosLosDarts({super.key});
+
   @override
   State<SomosLosDarts> createState() => _SomosLosDartsState();
 }
 
+class _SomosLosDartsState extends State<SomosLosDarts> {
+  final PageController _pageController = PageController();
+  int _paginaActual = 0;
 
-class _SomosLosDartsState extends State<SomosLosDarts>{
+  void _cambiarPagina(int nuevaPagina) {
+    if (nuevaPagina >= 0 && nuevaPagina < 2) {
+      _pageController.animateToPage(
+        nuevaPagina,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
-  Widget build(BuildContext context){
-
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-       // title: const Text('Somos los Dart'),
-      ),
+      appBar: AppBar(title: const Text('Somos los Dart')),
       backgroundColor: const Color.fromARGB(255, 90, 79, 129),
-      body : Center (
-        child: const Text('Somos los Dart', style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
-      )
-  
-    );
+      body: Column(
+        children: [
+          // Parte central con flechas a los lados y PageView
+          Expanded(
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                  onPressed: () => _cambiarPagina(_paginaActual - 1),
+                ),
+                
+                Expanded(
+  // Listener captura la rueda del mouse
+  child: Listener(
+    onPointerSignal: (pointerSignal) {
+      if (pointerSignal is PointerScrollEvent) {
+        if (pointerSignal.scrollDelta.dy > 0) {
+          _cambiarPagina(_paginaActual + 1);
+        } else if (pointerSignal.scrollDelta.dy < 0) {
+          _cambiarPagina(_paginaActual - 1);
+        }
+      }
+    },
+    // AQUÍ METES EL SCROLL CONFIGURATION ENVOLVIENDO AL PAGEVIEW:
+    child: ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse, // Permite arrastrar con el clic izquierdo
+          PointerDeviceKind.trackpad,
+        },
+      ),
+      child: PageView(
+        controller: _pageController,
+        onPageChanged: (index) => setState(() => _paginaActual = index),
+        children: const [
+          Center(child: Text('Vista 1', style: TextStyle(color: Colors.white, fontSize: 24))),
+          Center(child: Text('Vista 2', style: TextStyle(color: Colors.white, fontSize: 24))),
+        ],
+      ),
+    ),
+  ),
+),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                  onPressed: () => _cambiarPagina(_paginaActual + 1),
+                ),
+              ],
+            ),
+          ),
 
+          // Indicador de puntos simple en la parte inferior
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(2, (index) => Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: _paginaActual == index ? 12 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: _paginaActual == index ? Colors.white : Colors.white54,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              )),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
-
-
-
