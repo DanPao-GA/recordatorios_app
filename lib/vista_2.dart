@@ -24,11 +24,9 @@ class _Vista2State extends State<Vista2> {
       //verdadero: tlf
     SingleChildScrollView(
       child:Column(
-        //mainAxisAlignment: MainAxisAlignment.center, //esto centra el contenido horizontalmente
-        //crossAxisAlignment: CrossAxisAlignment.center, //esto centra el contenido verticalmente sin importar el tamaño de la pantalla
         children: [
 
-         // Expanded( //esto es para que el contenido ocupe todo el espacio disponible en la pantalla, sin esto el contenido se vería muy pequeño en pantallas grandes y flutter se vuelve loco y no sabe donde poner el contenido
+         // Expanded( CRASHEA SI LO USAS PA TLF NO SUAR
             Container(
               padding: EdgeInsets.all(16.0), //esto es para que el contenido no toque los bordes de la pantalla
               decoration: BoxDecoration(
@@ -46,7 +44,7 @@ class _Vista2State extends State<Vista2> {
               ),
             ),
           //),
-          
+          // rojas se van a ver las rosas de este jardin !
             const SizedBox(width: 16), //caja de separacion
 
           Container(
