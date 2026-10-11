@@ -26,14 +26,14 @@ class Habit {
   });
 }
 
-class vista_0 extends StatefulWidget {
-  const vista_0({super.key});
+class Vista0 extends StatefulWidget {
+  const Vista0({super.key});
 
   @override
-  State<Vista0> createState() => _Vista0State();
+  State<Vista0> createState() => _Vista_0State();
 }
 
-class _vista_0State extends State<vista_0> {
+class _Vista_0State extends State<Vista0> {
   // Lista inicial de hábitos con sus respectivos temporizadores
   final List<Habit> _habitos = [
     Habit(name: 'Pausa de hidratación', intervalMinutes: 10, icon: Icons.water_drop),
@@ -90,7 +90,7 @@ class _vista_0State extends State<vista_0> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -126,7 +126,7 @@ class _vista_0State extends State<vista_0> {
                         // Switch para activar/desactivar el hábito
                         Switch(
                           value: habito.isActive,
-                          activeColor: AppColors.colorBase1,
+                          activeThumbColor: AppColors.colorBase1,
                           onChanged: (bool value) {
                             setState(() {
                               habito.isActive = value;

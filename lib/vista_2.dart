@@ -114,7 +114,7 @@ class _Vista2State extends State<Vista2> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
-                      borderSide: BorderSide(color: AppColors.colorBase2.withOpacity(0.7), width: 1.5),
+                      borderSide: BorderSide(color: AppColors.colorBase2.withValues(alpha: 0.7), width: 1.5),
                       // Borde cuando no está seleccionado
                     ), // PA EL SELECCIONADO
                     focusedBorder: OutlineInputBorder(
@@ -123,6 +123,19 @@ class _Vista2State extends State<Vista2> {
                   ),
                 ),
                 ),
+
+                // Row(
+                  
+                  // children [
+                    
+                  //   TextField(), 
+                  //   TextField(), 
+
+                  // ], 
+
+
+                // )
+
                     Text('Contenido de la Vista 2'),
 
                 ],
@@ -171,7 +184,7 @@ class _Vista2State extends State<Vista2> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
-                      borderSide: BorderSide(color: AppColors.colorBase2.withOpacity(0.7), width: 1.5),
+                      borderSide: BorderSide(color: AppColors.colorBase2.withValues(alpha: 0.7), width: 1.5),
                       // Borde cuando no está seleccionado
                     ), // PA EL SELECCIONADO
                     focusedBorder: OutlineInputBorder(
