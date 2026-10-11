@@ -40,11 +40,11 @@ class InterfazGraficaMenu extends StatefulWidget {
 }
 
 class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
-  PageController _pageController = PageController();
-  int _paginaActual = 0;
+  PageController _pageController = PageController(initialPage: 1);
+  int _paginaActual = 1;
 
   void _cambiarPagina(int nuevaPagina) {
-    if (nuevaPagina >= 0 && nuevaPagina < 2) {
+    if (nuevaPagina >= 0 && nuevaPagina < 3) {
       _pageController.animateToPage(
         nuevaPagina,
         duration: const Duration(milliseconds: 300),
@@ -64,10 +64,10 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
           Expanded(
             child: Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                  onPressed: () => _cambiarPagina(_paginaActual - 1),
-                ),
+                // IconButton(
+                //   icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                //   onPressed: () => _cambiarPagina(_paginaActual - 1),
+                // ),
                 
                 Expanded(
   // Listener captura la rueda del mouse
@@ -94,6 +94,7 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
         controller: _pageController,
         onPageChanged: (index) => setState(() => _paginaActual = index),
         children: const [
+          Center(child: Text('Vista 0', style: TextStyle(color: Colors.white, fontSize: 24))),
           Center(child: Text('Vista 1', style: TextStyle(color: Colors.white, fontSize: 24))),
           Center(child: Text('Vista 2', style: TextStyle(color: Colors.white, fontSize: 24))),
         ],
@@ -101,10 +102,10 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
     ),
   ),
 ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-                  onPressed: () => _cambiarPagina(_paginaActual + 1),
-                ),
+                // IconButton(
+                //   icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                //   onPressed: () => _cambiarPagina(_paginaActual + 1),
+                // ),
               ],
             ),
           ),
@@ -114,7 +115,7 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(2, (index) => Container(
+              children: List.generate(3, (index) => Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 width: _paginaActual == index ? 12 : 8,
                 height: 8,
