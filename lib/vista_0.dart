@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:recordatorios_app/AppColors.dart';
 
-class vista_0 extends StatefulWidget {
-  const vista_0({super.key});
+class Vista0 extends StatefulWidget {
+  const Vista0({super.key});
 
   @override
-  State<vista_0> createState() => _vista_0State();
+  State<Vista0> createState() => _Vista0State();
 }
 
-class _vista_0State extends State<vista_0> {
+class _Vista0State extends State<Vista0> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
