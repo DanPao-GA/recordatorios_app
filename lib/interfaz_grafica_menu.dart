@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:recordatorios_app/vista_1.dart';
+import 'package:recordatorios_app/vista_2.dart';
+import 'package:recordatorios_app/AppColors.dart';
 
 
-class AppColors {
-  static const Color colorBase1 = Color.fromARGB(255, 9, 0, 135);
-  static const Color colorBase1_2 = Color.fromARGB(255, 25, 19, 110);
-  static const Color colorBase2 = Color.fromARGB(255, 242, 255, 233);
-  static const Color colorBase3 = Color.fromARGB(255, 242, 164, 165);
-  static const Color colorBase4 = Color.fromARGB(255, 229, 212, 197);
-  static const Color colorBase5 = Color.fromARGB(255, 48, 120, 164);
-  static const Color colorTexto = Colors.white;
-}
+// class AppColors {
+//   static const Color colorBase1 = Color.fromARGB(255, 9, 0, 135);
+//   static const Color colorBase1_2 = Color.fromARGB(255, 25, 19, 110);
+//   static const Color colorBase2 = Color.fromARGB(255, 242, 255, 233);
+//   static const Color colorBase3 = Color.fromARGB(255, 242, 164, 165);
+//   static const Color colorBase4 = Color.fromARGB(255, 229, 212, 197);
+//   static const Color colorBase5 = Color.fromARGB(255, 48, 120, 164);
+//   static const Color colorTexto = Colors.white;
+// }
 
 
 // class PantallaRecordatorios extends StatelessWidget {
@@ -57,7 +60,7 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Somos los Dart')),
-      backgroundColor: const Color.fromARGB(255, 90, 79, 129),
+      backgroundColor: AppColors.colorBase5,
       body: Column(
         children: [
           // Parte central con flechas a los lados y PageView
@@ -90,6 +93,7 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
           PointerDeviceKind.trackpad,
         },
       ),
+
       child: PageView(
         controller: _pageController,
         onPageChanged: (index) => setState(() => _paginaActual = index),
