@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:recordatorios_app/vista_1.dart';
 import 'package:recordatorios_app/vista_2.dart';
+import 'package:recordatorios_app/vista_0.dart';
 import 'package:recordatorios_app/AppColors.dart';
 
 
@@ -98,9 +99,12 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
         controller: _pageController,
         onPageChanged: (index) => setState(() => _paginaActual = index),
         children: const [
-          Center(child: Text('Vista 0', style: TextStyle(color: Colors.white, fontSize: 24))),
-          Center(child: Text('Vista 1', style: TextStyle(color: Colors.white, fontSize: 24))),
-          Center(child: Text('Vista 2', style: TextStyle(color: Colors.white, fontSize: 24))),
+          vista_0(),
+          //Center(child: Text('Vista 0', style: TextStyle(color: Colors.white, fontSize: 24))),
+          vista_1(),
+          //Center(child: Text('Vista 1', style: TextStyle(color: Colors.white, fontSize: 24))),
+          vista_2(),
+          //Center(child: Text('Vista 2', style: TextStyle(color: Colors.white, fontSize: 24))),
         ],
       ),
     ),
