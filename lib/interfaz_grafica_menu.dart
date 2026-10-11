@@ -66,6 +66,7 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
 
             ElevatedButton(
               onPressed: () {
+                print('Viva Messi'); //esto se ve en la consola de debug, no en la terminal TT
                 Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) => const SomosLosDarts()));
               },
 // el context es lo q le indica a flutter donde esta el boton, en q pantalla pues, en este caso en la
