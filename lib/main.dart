@@ -17,7 +17,7 @@ void main() async {
   }
 
   // Esto inicializa la bdd, no tocar
-  await DatabaseHelper().database;
+  await DatabaseHelper().database; //fua ya iba yo a tocar esto pq no sabia q era JAJAJAJA
 
   runApp(const PantallaRecordatorios());
 }
@@ -28,7 +28,7 @@ class PantallaRecordatorios extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false, // Esto quita la banderita de debug que aparece en la esquina superior derecha
       title:'Recordatorios App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 106, 255, 223)),
