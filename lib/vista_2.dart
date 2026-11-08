@@ -143,7 +143,7 @@ class _Vista2State extends State<Vista2> {
             ),
           ),
 
-            const SizedBox(width: 16), //caja de separacion
+            const SizedBox(width: 16), //caja de separacion // pa probar
 
           Expanded(
             child: Container(
