@@ -64,7 +64,7 @@ class DatabaseHelper {
       CREATE TABLE IF NOT EXISTS habitos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT NOT NULL,
-        tipo TEXT NOT NULL,           -- 'intervalo', 'unico', o 'semanal'
+        tipo TEXT NOT NULL,           -- 'intervalo', 'unico', o 'semanal' 
         intervalo_minutos INTEGER,    -- Solo para tipo 'intervalo'
         fecha TEXT,                   -- Solo para tipo 'unico' (ej: '2026-10-14')
         hora TEXT,                    -- Solo la hora atómica (ej: '15:00:00')
