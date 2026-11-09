@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:recordatorios_app/AppColors.dart';
 import 'package:flutter/services.dart';
@@ -24,6 +26,15 @@ class _Vista2State extends State<Vista2> {
   }
 
   bool intervaloUnico = false; //
+  bool intervaloUnico2 = false; //
+  bool lunes = false;
+  bool martes = false;
+  bool miercoles = false;
+  bool jueves = false;
+  bool viernes = false;
+  bool sabado = false;
+  bool domingo = false;
+
 
 
   InputDecoration _inputDecoration(String hintText) {
@@ -233,11 +244,245 @@ minimumSize: tamaño mínimo del botón
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
-
+//         GestureDetector(
+//   onTap: () {
+//     print("¡Contenedor presionado!");
+//     // Aquí puedes cambiar estados con setState
+//   },
+//   child: Container(
+//     padding: const EdgeInsets.all(16),
+//     decoration: BoxDecoration(
+//       color: Colors.blue,
+//       borderRadius: BorderRadius.circular(10),
+//     ),
+//     child: const Text('Haz clic aquí', style: TextStyle(color: Colors.white)),
+//   ),
+// )
 
       ],
     );
   }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ Widget _buildColumn2() { //esto es un metodo que devuelve un widget, en este caso una columna con dos cuadros de texto y un titulo
+    // no se usa un row antes porque queremos que los cuadros de texto se acomoden uno debajo del otro, y no uno al lado del otro
+    return Column( //regresa columna pa q se acomoden los cuadros de texto uno debajo del otro, y no uno al lado del otro
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(18.0),
+          decoration: BoxDecoration(
+            color: AppColors.colorBase4,
+            border: Border.all(color: AppColors.colorBase2, width: 2.0),
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          //child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+          child: Text(
+            'Create Custom Break',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.colorBase1,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16.0),
+        Column(
+          children: [
+          Container(
+          padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: AppColors.colorBase3,
+              border: Border.all(color: AppColors.colorBase2, width: 2.0),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          //child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+          child: Row(
+            children: [
+            Text(
+            'Selecciona Dias de la Semana',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.colorBase1,
+            ),
+          ),
+          
+            ],
+          ),
+          ),
+          ], //children
+        ),
+
+
+
+        const SizedBox(height: 16.0),
+
+        Wrap(
+          alignment: WrapAlignment.center, // Centra los días en el contenedor
+          spacing: 3.0,      // Espacio horizontal entre botón y botón
+          runSpacing: 8.0, //vertical si se mueven
+          children: [
+            
+            _buildButtom("Lunes", lunes, () { setState(() { lunes = !lunes; } ); }),
+                      //() es pa decir q vas  crear una funcion q no recibe parametros q va a hacer {lo q este dentro de las llaves}
+            _buildButtom("Martes", martes, () { setState(() { martes = !martes; } ); }),
+
+            _buildButtom("Miércoles", miercoles, () { setState(() { miercoles = !miercoles; } ); }),
+                        
+            _buildButtom("Jueves", jueves, () { setState(() { jueves = !jueves; } ); }),
+
+            _buildButtom("Viernes", viernes, () { setState(() { viernes = !viernes; } ); }),
+            
+            _buildButtom("Sábado", sabado, () { setState(() { sabado = !sabado; } ); }),
+            
+            _buildButtom("Domingo", domingo, () { setState(() { domingo = !domingo; } ); }),
+          ],
+        ),
+
+      const SizedBox(height: 16.0),
+      // ROW DEL BOTON DEL TIPO
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        Expanded(
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(5.0), 
+          decoration: BoxDecoration(
+            color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4, //AQUI ES EL BOTON Q CAMBIA COLORES
+            //color: AppColors.colorBase4,
+            border: Border.all(color: AppColors.colorBase2, width: 2.0),
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+         // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+          //  children: [
+          child: Text(
+            'INTERVALO',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
+            ),
+          ),
+        ),
+        ),
+        const SizedBox(width: 16.0),
+        // 2. El Switch en el medio
+      Transform.scale(
+        scale: 1.2,
+        child:
+        Switch(
+              value: intervaloUnico2,
+              activeThumbColor: AppColors.colorBase1,
+              onChanged: (bool newValue) {
+                setState(() {
+                  intervaloUnico2 = newValue;
+                  }
+                );
+              }
+          ),
+      ),
+          const SizedBox(width: 16.0),
+          Expanded(
+          child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(5.0), 
+          decoration: BoxDecoration(
+            color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
+            border: Border.all(color: AppColors.colorBase2, width: 2.0),
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+         // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+          //  children: [
+          child: Text(
+            'UNICO',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4,
+              
+            ),
+          ),
+        ),
+        ),
+
+            ] //children
+         // )
+        ),
+
+      const SizedBox(height: 16.0),
+
+      ElevatedButton(
+        /*
+        stylefrom
+        backgroundColor: color del fondo.
+foregroundColor: color del texto y del icono.
+padding: espacio interno.
+shape: forma, por ejemplo bordes redondeados.
+elevation: altura de la sombra.
+minimumSize: tamaño mínimo del botón
+        */ 
+      onPressed: () {
+
+        String tipoBreak = !intervaloUnico2 ? "intervalo" : "Unico";
+        print(tipoBreak);
+        
+        List<String> diasSeleccionados = [];
+
+        // 2. Revisamos uno por uno si su valor es true
+        if (lunes) diasSeleccionados.add("Lunes");
+        if (martes) diasSeleccionados.add("Martes");
+        if (miercoles) diasSeleccionados.add("Miércoles");
+        if (jueves) diasSeleccionados.add("Jueves");
+        if (viernes) diasSeleccionados.add("Viernes");
+        if (sabado) diasSeleccionados.add("Sábado");
+        if (domingo) diasSeleccionados.add("Domingo");
+
+        // 3. Validación opcional: Validar que haya seleccionado al menos un día
+        if (diasSeleccionados.isEmpty) {
+          print("¡Falta seleccionar al menos un día!");
+          return; // Detiene la ejecución si no marcó nada
+        }
+
+        // 4. ¡Listo! Aquí ya tienes los días listos para guardar
+        print("Días seleccionados a guardar: $diasSeleccionados");
+
+      },
+      style: ElevatedButton.styleFrom( //EL STYLEFROM es 
+      backgroundColor: AppColors.colorBase1, // O el color que prefieras de tu app
+      foregroundColor: AppColors.colorBase2,
+      padding: const EdgeInsets.symmetric(vertical: 16), //esto es pa q se centre
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+        ),
+        child: const Text(
+          'Create Break',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+//         GestureDetector(
+//   onTap: () {
+//     print("¡Contenedor presionado!");
+//     // Aquí puedes cambiar estados con setState
+//   },
+//   child: Container(
+//     padding: const EdgeInsets.all(16),
+//     decoration: BoxDecoration(
+//       color: Colors.blue,
+//       borderRadius: BorderRadius.circular(10),
+//     ),
+//     child: const Text('Haz clic aquí', style: TextStyle(color: Colors.white)),
+//   ),
+// )
+
+      ]
+    );
+  }
+
+
+
 
   Widget _buildPanel(Widget child) { //esto es un metodo que devuelve un widget, en este caso un contenedor con un borde y un color de fondo, y adentro el widget que le pasemos como parametro
     //el child es el widget que le pasamos como parametro, en este caso la columna con los cuadros de texto y el titulo
@@ -251,6 +496,38 @@ minimumSize: tamaño mínimo del botón
       child: child,
     );
   }
+  //voidcallbck es q eba recibir una funcion void, o sea q haga algo
+  Widget _buildButtom(String texto, bool seleccionado, VoidCallback press) {
+
+    return ElevatedButton(
+            onPressed: press,
+            style:ElevatedButton.styleFrom(
+              backgroundColor: seleccionado ? AppColors.colorBase3 : AppColors.colorBase4,
+              foregroundColor: seleccionado ? AppColors.colorBase2 : AppColors.colorBase1 , //color de la letra
+              padding: const EdgeInsets.symmetric(vertical:6, horizontal:3),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: AppColors.colorBase2, width: 2),
+              ),
+            ),
+            child: Text(
+              texto,
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold 
+            // foreground: Paint()
+            // ..style = PaintingStyle.stroke
+            // ..strokeWidth = 0.5
+            // ..color = seleccionado ? AppColors.colorBase2 : AppColors.colorBase3,
+              ), 
+            ),
+    );
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
   @override
   Widget build(BuildContext context) { //esto es el metodo que construye la interfaz de usuario, en este caso un scaffold con un body que contiene un padding y adentro un row o una columna dependiendo del ancho de la pantalla
@@ -266,9 +543,11 @@ minimumSize: tamaño mínimo del botón
                   children: [
                     _buildPanel(_buildColumn()),
                     const SizedBox(height: 16.0),
-                    _buildPanel(const Text('Contenido de la Vista 2')),
+                    _buildPanel(_buildColumn2()),
                   ],
                 ),
+
+
               )
             : Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,34 +555,7 @@ minimumSize: tamaño mínimo del botón
                   Expanded(child: _buildPanel(_buildColumn())),
                   const SizedBox(width: 16.0),
                   Expanded(
-                    child: _buildPanel(
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(30.0),
-                            decoration: BoxDecoration(
-                              color: AppColors.colorBase4,
-                              border: Border.all(
-                                color: AppColors.colorBase2,
-                                width: 2.0,
-                              ),
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            child: Text(
-                              'Create Custom Break',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.colorBase1,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16.0),
-                          const Text('Contenido de la Vista 2'),
-                        ],
-                      ),
-                    ),
+                    child: _buildPanel(_buildColumn2()),
                   ),
                 ],
               ),
