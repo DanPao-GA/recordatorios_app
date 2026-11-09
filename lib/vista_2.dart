@@ -34,7 +34,7 @@ class _Vista2State extends State<Vista2> {
   bool viernes = false;
   bool sabado = false;
   bool domingo = false;
-
+  TimeOfDay? horaSeleccionada;
 
 
   InputDecoration _inputDecoration(String hintText) {
@@ -341,6 +341,28 @@ minimumSize: tamaño mínimo del botón
         ),
 
       const SizedBox(height: 16.0),
+
+      ElevatedButton(onPressed: () {
+
+          _seleccionarHora(context);
+
+      },
+      style: ElevatedButton.styleFrom( //EL STYLEFROM es 
+      backgroundColor: AppColors.colorBase1, // O el color que prefieras de tu app
+      foregroundColor: AppColors.colorBase2,
+      padding: const EdgeInsets.symmetric(vertical: 16), //esto es pa q se centre
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+        ),
+        child: Text(
+          horaSeleccionada == null // esto es un if horaSeleccionada == null
+          ? 'Seleccionar hora: ': "Hora: ${horaSeleccionada!.format(context)}",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+
+        const SizedBox(height: 16.0),
       // ROW DEL BOTON DEL TIPO
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -447,6 +469,21 @@ minimumSize: tamaño mínimo del botón
 
         // 4. ¡Listo! Aquí ya tienes los días listos para guardar
         print("Días seleccionados a guardar: $diasSeleccionados");
+        print("Hora: ${horaSeleccionada!.format(context)}"); //.formt ase adapta a la ersona
+
+        setState(() {
+            // 1. Regresamos todos los días a falso (deseleccionados)
+            lunes = false;
+            martes = false;
+            miercoles = false;
+            jueves = false;
+            viernes = false;
+            sabado = false;
+            domingo = false;
+
+            // 2. Devolvemos la hora a su estado inicial vacío
+            horaSeleccionada = null;
+        });
 
       },
       style: ElevatedButton.styleFrom( //EL STYLEFROM es 
@@ -522,6 +559,25 @@ minimumSize: tamaño mínimo del botón
     );
   }
 
+Future<void> _seleccionarHora(BuildContext context) async {
+  // 1. Mostramos el cuadro de diálogo del reloj nativo
+  final TimeOfDay? temporal = await showTimePicker( //almacena la hra seleccionada
+    context: context,
+    initialTime: horaSeleccionada ?? TimeOfDay.now(), // Hora inicial por defecto
+    builder: (context, child) { //aqui se pone bonito
+      // Opcional: Esto es por si quieres personalizar los colores o idioma del reloj
+      return MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false), // Cambia a true si prefieres formato de 24 horas
+        child: child!,
+      );
+    },
+  );
+  if (temporal != null) {
+    setState(() {
+      horaSeleccionada = temporal;
+    });
+  }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
