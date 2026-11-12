@@ -15,8 +15,11 @@ class _Vista2State extends State<Vista2> {
 
   final TextEditingController horasInput = TextEditingController();
   final TextEditingController minutosInput = TextEditingController();
-  final TextEditingController nombreInput = TextEditingController();
+  final TextEditingController nombreInput = TextEditingController(); //esto 
+  final TextEditingController nombreInputSemanal = TextEditingController(); //esto 
+  final TextEditingController nombreInputUnico = TextEditingController(); //esto 
 
+  
   // (Opcional pero muy importante) Liberas la memoria cuando la vista se destruye
   @override
   void dispose() {
@@ -35,6 +38,8 @@ class _Vista2State extends State<Vista2> {
   bool sabado = false;
   bool domingo = false;
   TimeOfDay? horaSeleccionada;
+  TimeOfDay? horaSeleccionadaUnica;
+  DateTime? fechaSeleccionada;
 
 
   InputDecoration _inputDecoration(String hintText) {
@@ -286,7 +291,18 @@ minimumSize: tamaño mínimo del botón
             ),
           ),
         ),
+
         const SizedBox(height: 16.0),
+       // Expanded(
+              //child:
+              TextField(
+            style: TextStyle(color: AppColors.colorBase1),
+                decoration: _inputDecoration('Nombre del recordatorio Semanal'),
+                controller: nombreInputSemanal,),
+         //     ),
+
+        const SizedBox(height: 16.0),
+
         Column(
           children: [
           Container(
@@ -313,11 +329,7 @@ minimumSize: tamaño mínimo del botón
           ),
           ], //children
         ),
-
-
-
         const SizedBox(height: 16.0),
-
         Wrap(
           alignment: WrapAlignment.center, // Centra los días en el contenedor
           spacing: 3.0,      // Espacio horizontal entre botón y botón
@@ -341,11 +353,22 @@ minimumSize: tamaño mínimo del botón
         ),
 
       const SizedBox(height: 16.0),
+ //seleccionar hora
+  Row( // row del boton claendario
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+    
+          Expanded(
 
-      ElevatedButton(onPressed: () {
+          child:
+      ElevatedButton(onPressed: () async { //async admite q habra un momento de vlor nulos,
 
-          _seleccionarHora(context);
+          final hora_final = await _seleccionarHora(context, horaSeleccionada); //await hace q se detenga en esa funciona, await no puede ir sin async
 
+          if (hora_final != null) {
+            setState(() {
+              horaSeleccionada = hora_final; // 👈 ¡Aquí sí se actualiza tu variable original!
+          }); }
       },
       style: ElevatedButton.styleFrom( //EL STYLEFROM es 
       backgroundColor: AppColors.colorBase1, // O el color que prefieras de tu app
@@ -361,77 +384,86 @@ minimumSize: tamaño mínimo del botón
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
+          ),
 
+
+  const Icon(
+      Icons.access_time,
+      size: 78,
+      color: AppColors.colorBase2,)
+
+      ],
+      ),
         const SizedBox(height: 16.0),
       // ROW DEL BOTON DEL TIPO
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-        Expanded(
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(5.0), 
-          decoration: BoxDecoration(
-            color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4, //AQUI ES EL BOTON Q CAMBIA COLORES
-            //color: AppColors.colorBase4,
-            border: Border.all(color: AppColors.colorBase2, width: 2.0),
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-         // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
-          //  children: [
-          child: Text(
-            'INTERVALO',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
-            ),
-          ),
-        ),
-        ),
-        const SizedBox(width: 16.0),
-        // 2. El Switch en el medio
-      Transform.scale(
-        scale: 1.2,
-        child:
-        Switch(
-              value: intervaloUnico2,
-              activeThumbColor: AppColors.colorBase1,
-              onChanged: (bool newValue) {
-                setState(() {
-                  intervaloUnico2 = newValue;
-                  }
-                );
-              }
-          ),
-      ),
-          const SizedBox(width: 16.0),
-          Expanded(
-          child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(5.0), 
-          decoration: BoxDecoration(
-            color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
-            border: Border.all(color: AppColors.colorBase2, width: 2.0),
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-         // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
-          //  children: [
-          child: Text(
-            'UNICO',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4,
+      // Row(
+      //   mainAxisAlignment: MainAxisAlignment.center,
+      //   children: [
+      //   Expanded(
+      //   child: Container(
+      //     alignment: Alignment.center,
+      //     padding: const EdgeInsets.all(5.0), 
+      //     decoration: BoxDecoration(
+      //       color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4, //AQUI ES EL BOTON Q CAMBIA COLORES
+      //       //color: AppColors.colorBase4,
+      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
+      //       borderRadius: BorderRadius.circular(16.0),
+      //     ),
+      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+      //     //  children: [
+      //     child: Text(
+      //       'INTERVALO',
+      //       style: TextStyle(
+      //         fontSize: 15,
+      //         fontWeight: FontWeight.bold,
+      //         color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
+      //       ),
+      //     ),
+      //   ),
+      //   ),
+      //   const SizedBox(width: 16.0),
+      //   // 2. El Switch en el medio
+      // Transform.scale(
+      //   scale: 1.2,
+      //   child:
+      //   Switch(
+      //         value: intervaloUnico2,
+      //         activeThumbColor: AppColors.colorBase1,
+      //         onChanged: (bool newValue) {
+      //           setState(() {
+      //             intervaloUnico2 = newValue;
+      //             }
+      //           );
+      //         }
+      //     ),
+      // ),
+      //     const SizedBox(width: 16.0),
+      //     Expanded(
+      //     child: Container(
+      //     alignment: Alignment.center,
+      //     padding: const EdgeInsets.all(5.0), 
+      //     decoration: BoxDecoration(
+      //       color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
+      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
+      //       borderRadius: BorderRadius.circular(16.0),
+      //     ),
+      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+      //     //  children: [
+      //     child: Text(
+      //       'UNICO',
+      //       style: TextStyle(
+      //         fontSize: 15,
+      //         fontWeight: FontWeight.bold,
+      //         color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4,
               
-            ),
-          ),
-        ),
-        ),
+      //       ),
+      //     ),
+      //   ),
+      //   ),
 
-            ] //children
-         // )
-        ),
+      //       ] //children
+      //    // )
+      //   ),
 
       const SizedBox(height: 16.0),
 
@@ -447,8 +479,8 @@ minimumSize: tamaño mínimo del botón
         */ 
       onPressed: () {
 
-        String tipoBreak = !intervaloUnico2 ? "intervalo" : "Unico";
-        print(tipoBreak);
+       // String tipoBreak = !intervaloUnico2 ? "intervalo" : "Unico";
+       // print(tipoBreak);
         
         List<String> diasSeleccionados = [];
 
@@ -470,7 +502,12 @@ minimumSize: tamaño mínimo del botón
         // 4. ¡Listo! Aquí ya tienes los días listos para guardar
         print("Días seleccionados a guardar: $diasSeleccionados");
         print("Hora: ${horaSeleccionada!.format(context)}"); //.formt ase adapta a la ersona
-
+        if (nombreInputSemanal.text.trim().isEmpty){
+        print('CAMPOS VACIOS');
+        }
+        else{print('nombre: ${nombreInputSemanal.text}');} 
+        // int horaParaBD = horaSeleccionada!.hour; -> 14
+        //String jola = horaSeleccionada!.hour.toString();
         setState(() {
             // 1. Regresamos todos los días a falso (deseleccionados)
             lunes = false;
@@ -483,6 +520,7 @@ minimumSize: tamaño mínimo del botón
 
             // 2. Devolvemos la hora a su estado inicial vacío
             horaSeleccionada = null;
+            nombreInputSemanal.clear();
         });
 
       },
@@ -513,6 +551,271 @@ minimumSize: tamaño mínimo del botón
 //     child: const Text('Haz clic aquí', style: TextStyle(color: Colors.white)),
 //   ),
 // )
+
+      ]
+    );
+  }
+
+///////////////////////////////////////////////
+///TERCERA COLUMNA
+///
+Widget _buildColumn3() { //esto es un metodo que devuelve un widget, en este caso una columna con dos cuadros de texto y un titulo
+    // no se usa un row antes porque queremos que los cuadros de texto se acomoden uno debajo del otro, y no uno al lado del otro
+    return Column( //regresa columna pa q se acomoden los cuadros de texto uno debajo del otro, y no uno al lado del otro
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(18.0),
+          decoration: BoxDecoration(
+            color: AppColors.colorBase4,
+            border: Border.all(color: AppColors.colorBase2, width: 2.0),
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          //child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+          child: Text(
+            'Create Custom Break',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.colorBase1,
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 16.0),
+
+              TextField(
+            style: TextStyle(color: AppColors.colorBase1),
+                decoration: _inputDecoration('Nombre del recordatorio Unico'),
+                controller: nombreInputUnico,),
+
+        const SizedBox(height: 16.0),
+
+        Column(
+          children: [
+          Container(
+          padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: AppColors.colorBase3,
+              border: Border.all(color: AppColors.colorBase2, width: 2.0),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          //child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+          child: Row(
+            children: [
+            Text(
+            'Selecciona La Fecha',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.colorBase1,
+            ),
+          ),
+          
+            ],
+          ),
+          ),
+          ], //children
+        ),
+        const SizedBox(height: 16.0),
+
+  Row( // row del boton claendario
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+
+      Expanded(child: 
+      ElevatedButton(onPressed: () {
+          _seleccionarFecha(context);
+      },
+      style: ElevatedButton.styleFrom( //EL STYLEFROM es 
+      backgroundColor: AppColors.colorBase1, // O el color que prefieras de tu app
+      foregroundColor: AppColors.colorBase2,
+      padding: const EdgeInsets.symmetric(vertical: 16), //esto es pa q se centre
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+        ),
+        child: Text(
+          fechaSeleccionada == null // esto es un if horaSeleccionada == null
+          ? 'Seleccionar Fecha: ': 'Fecha: ${fechaSeleccionada!.day} / ${fechaSeleccionada!.month} / ${fechaSeleccionada!.year}', //LAS FECHAS SELECCIONADAS SON ENTEROS
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+      ),
+// el ! le dice al lenguaje q la variable en ese momento NO es nula
+
+      const Icon(
+        Icons.calendar_month_rounded, 
+        size: 78,
+        color: AppColors.colorBase2,
+      ),
+
+      ]
+  ),
+        
+      const SizedBox(height: 16.0),
+  //seleccionar hora
+  Row( // row del boton claendario
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+    
+          Expanded(
+
+          child: ElevatedButton(onPressed: () async {
+
+            final hora_final = await _seleccionarHora(context, horaSeleccionadaUnica);
+
+            if (hora_final != null) {
+              setState(() {
+                horaSeleccionadaUnica = hora_final; // 👈 ¡Aquí sí se actualiza tu variable original!
+            }); }
+        },
+        style: ElevatedButton.styleFrom( //EL STYLEFROM es 
+        backgroundColor: AppColors.colorBase1, // O el color que prefieras de tu app
+        foregroundColor: AppColors.colorBase2,
+        padding: const EdgeInsets.symmetric(vertical: 16), //esto es pa q se centre
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+          ),
+          child: Text(
+            horaSeleccionadaUnica == null // esto es un if horaSeleccionada == null
+            ? 'Seleccionar hora: ': "Hora: ${horaSeleccionadaUnica!.format(context)}",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+          ),
+
+        const SizedBox(width: 12),
+    
+    // El icono del reloj al lado, igual que con la fecha
+    const Icon(
+      Icons.access_time,
+      size: 78,
+      color: AppColors.colorBase2,)
+
+      ],
+      ),
+
+      const SizedBox(height: 16.0),
+
+      // ROW DEL BOTON DEL TIPO
+      // Row(
+      //   mainAxisAlignment: MainAxisAlignment.center,
+      //   children: [
+      //   Expanded(
+      //   child: Container(
+      //     alignment: Alignment.center,
+      //     padding: const EdgeInsets.all(5.0), 
+      //     decoration: BoxDecoration(
+      //       color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4, //AQUI ES EL BOTON Q CAMBIA COLORES
+      //       //color: AppColors.colorBase4,
+      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
+      //       borderRadius: BorderRadius.circular(16.0),
+      //     ),
+      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+      //     //  children: [
+      //     child: Text(
+      //       'INTERVALO',
+      //       style: TextStyle(
+      //         fontSize: 15,
+      //         fontWeight: FontWeight.bold,
+      //         color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
+      //       ),
+      //     ),
+      //   ),
+      //   ),
+      //   const SizedBox(width: 16.0),
+      //   // 2. El Switch en el medio
+      // Transform.scale(
+      //   scale: 1.2,
+      //   child:
+      //   Switch(
+      //         value: intervaloUnico2,
+      //         activeThumbColor: AppColors.colorBase1,
+      //         onChanged: (bool newValue) {
+      //           setState(() {
+      //             intervaloUnico2 = newValue;
+      //             }
+      //           );
+      //         }
+      //     ),
+      // ),
+      //     const SizedBox(width: 16.0),
+      //     Expanded(
+      //     child: Container(
+      //     alignment: Alignment.center,
+      //     padding: const EdgeInsets.all(5.0), 
+      //     decoration: BoxDecoration(
+      //       color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
+      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
+      //       borderRadius: BorderRadius.circular(16.0),
+      //     ),
+      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+      //     //  children: [
+      //     child: Text(
+      //       'UNICO',
+      //       style: TextStyle(
+      //         fontSize: 15,
+      //         fontWeight: FontWeight.bold,
+      //         color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4,
+              
+      //       ),
+      //     ),
+      //   ),
+      //   ),
+
+      //       ] //children
+      //    // )
+      //   ),
+
+      const SizedBox(height: 16.0),
+
+      ElevatedButton(
+        /*
+        stylefrom
+        backgroundColor: color del fondo.
+foregroundColor: color del texto y del icono.
+padding: espacio interno.
+shape: forma, por ejemplo bordes redondeados.
+elevation: altura de la sombra.
+minimumSize: tamaño mínimo del botón
+        */ 
+      onPressed: () {
+
+        // String tipoBreak = !intervaloUnico2 ? "intervalo" : "Unico";
+        // print(tipoBreak);
+        
+        print('Fecha: ${fechaSeleccionada!.day} / ${fechaSeleccionada!.month} / ${fechaSeleccionada!.year}'); //LAS FECHAS SELECCIONADAS SON ENTEROS')
+        print("Hora: ${horaSeleccionadaUnica!.format(context)}"); //.formt ase adapta a la ersona
+        // int horaParaBD = horaSeleccionada!.hour; -> 14
+        //String jola = horaSeleccionada!.hour.toString();
+        if (nombreInputUnico.text.trim().isEmpty){
+        print('CAMPOS VACIOS');
+        }
+        else{print('nombre: ${nombreInputUnico.text}');} 
+        setState(() {
+            // 2. Devolvemos la hora a su estado inicial vacío
+            horaSeleccionadaUnica = null;
+            fechaSeleccionada = null;
+            nombreInputUnico.clear();
+          //  nombreInputUnico = clear(); 
+        });
+
+      },
+      style: ElevatedButton.styleFrom( //EL STYLEFROM es 
+      backgroundColor: AppColors.colorBase1, // O el color que prefieras de tu app
+      foregroundColor: AppColors.colorBase2,
+      padding: const EdgeInsets.symmetric(vertical: 16), //esto es pa q se centre
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+        ),
+        child: const Text(
+          'Create Break',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
 
       ]
     );
@@ -559,11 +862,11 @@ minimumSize: tamaño mínimo del botón
     );
   }
 
-Future<void> _seleccionarHora(BuildContext context) async {
+Future<TimeOfDay?> _seleccionarHora(BuildContext context, TimeOfDay? hora) async {
   // 1. Mostramos el cuadro de diálogo del reloj nativo
   final TimeOfDay? temporal = await showTimePicker( //almacena la hra seleccionada
     context: context,
-    initialTime: horaSeleccionada ?? TimeOfDay.now(), // Hora inicial por defecto
+    initialTime: hora ?? TimeOfDay.now(), // Hora inicial por defecto, los ?? inican q si selecciono, entonces es la hora q selciono, y si no selecciono, entocnes e sla actual
     builder: (context, child) { //aqui se pone bonito
       // Opcional: Esto es por si quieres personalizar los colores o idioma del reloj
       return MediaQuery(
@@ -572,12 +875,32 @@ Future<void> _seleccionarHora(BuildContext context) async {
       );
     },
   );
-  if (temporal != null) {
-    setState(() {
-      horaSeleccionada = temporal;
-    });
-  }
+  // if (temporal != null) {
+  //   setState(() {
+  //     hora = temporal;
+  //   });
+  // }
+  return temporal; // pa poder usarla varias veces y q actualice
 }
+
+Future<void> _seleccionarFecha(BuildContext context) async { //aync indica q hay una tarea q toma timepo en completarse, q puede ser nula un rato
+  final DateTime? fechaTemporal = await showDatePicker( //el await hace q se detenga la ejecucion hasta q el usuario decida (elija fecha)
+  context: context,
+  initialDate: fechaSeleccionada ?? DateTime.now(),
+  firstDate: DateTime(2023),
+  lastDate: DateTime(2030),
+  ); //requiere contexto , fecha inciial, final y actual
+
+  if (fechaTemporal != null) {
+      setState(() {
+        fechaSeleccionada = fechaTemporal; //Actualiza la variable de la clase
+      });
+  }
+
+}
+  
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -613,6 +936,10 @@ Future<void> _seleccionarHora(BuildContext context) async {
                   Expanded(
                     child: _buildPanel(_buildColumn2()),
                   ),
+                  const SizedBox(width: 16.0),
+                  Expanded(child: _buildPanel(_buildColumn3())
+                  ),
+
                 ],
               ),
       ),
