@@ -5,7 +5,10 @@ import 'dart:io'; // Para detectar la plataforma (Platform.isWindows)
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Necesario para Windows/Linux/macOS
 import 'package:recordatorios_app/bdd.dart';
-
+//notificaciones 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +21,22 @@ void main() async {
 
   // Esto inicializa la bdd, no tocar
   await DatabaseHelper().database; //fua ya iba yo a tocar esto pq no sabia q era JAJAJAJA
+
+// Esto inicializa las notificaciones, quieto
+    tz.initializeTimeZones();
+
+    InitializationSettings initializationSettings = InitializationSettings();
+
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    await flutterLocalNotificationsPlugin.initialize(
+
+        initializationSettings, onDidReceiveNotificationResponse: (details) {
+          print('En efecto');  
+        },
+
+    );
+
 
   runApp(const PantallaRecordatorios());
 }
