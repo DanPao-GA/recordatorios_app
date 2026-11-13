@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:recordatorios_app/AppColors.dart';
+import 'bdd.dart';
 
 // Modelo de Hábito que incluye su temporizador (intervalo en minutos)
 class Habit {
+  int id; 
   String name;
   bool isActive;
   int intervalMinutes;
   IconData icon;
+  String type;
 
-// DAVID, DEBES TAMBIEN MODIFICAR ESTO DEBIDO A QUE 
-// LOS HABITOS PUEDEN SER DE TIPO INTERVALO, UNICO O SEMANAL,
-// POR LO QUE DEBES AGREGAR UN ATRIBUTO TIPO, Y SI
-// EL TIPO ES INTERVALO, AGREGAR EL ATRIBUTO intervalMinutes, 
-// SI ES UNICO, AGREGAR EL ATRIBUTO fechaUnica, 
-// Y SI ES SEMANAL, AGREGAR EL ATRIBUTO diasSemana (LISTA DE BOOLEANOS PARA CADA DIA DE LA SEMANA)
-// BASICAMENTE, REESTRUCTURAR ESTA CLASE PARA QUE PUEDA REPRESENTAR LOS TRES TIPOS DE HABITOS, 
 // Y LUEGO MODIFICAR LA VISTA PARA QUE MUESTRE LOS HABITOS SEGUN SU TIPO, 
 // Y TAMBIEN MODIFICAR LA BDD PARA QUE GUARDE EL TIPO DE HABITO Y SUS ATRIBUTOS CORRESPONDIENTES
 
+
   Habit({
+    required this.id,
     required this.name,
     this.isActive = true,
     required this.intervalMinutes,
     required this.icon,
+    required this.type,
   });
 }
 
@@ -34,12 +33,36 @@ class Vista0 extends StatefulWidget {
 }
 
 class _Vista_0State extends State<Vista0> {
-  // Lista inicial de hábitos con sus respectivos temporizadores
-  final List<Habit> _habitos = [
-    Habit(name: 'Pausa de hidratación', intervalMinutes: 10, icon: Icons.water_drop),
-    Habit(name: 'Pausa de estiramiento', intervalMinutes: 30, icon: Icons.accessibility_new),
-    Habit(name: 'Descanso de vista', intervalMinutes: 20, icon: Icons.remove_red_eye),
-  ];
+  List<Habit> _habitos = [];
+  @override
+    void initState() {
+    super.initState();
+    _cargarHabitos();
+    }
+    Future<void> _cargarHabitos() async {
+  final filas = await DatabaseHelper().obtenerHabitos();
+
+  final habitos = filas.map((fila) {
+    return Habit(
+      id: fila['id'] as int, // esto es el id del hábito
+      name: fila['nombre'] as String, // el nombre
+      isActive: fila['activo'] == 1, // aqui es pa q muestre el activo
+      intervalMinutes: (fila['intervalo_minutos'] as int?) ?? 0, // si tiene intervalo, si no, 0
+      icon: IconData(
+          (fila['icono'] as int?) ?? Icons.notifications.codePoint,
+            fontFamily: 'MaterialIcons',
+            ), // el icono
+      type: fila['tipo'] as String, // el tipo
+    );
+  }).toList();
+
+  if (!mounted) return;
+
+  setState(() {
+    _habitos = habitos;
+  });
+}
+
 
   // Función para eliminar un hábito de la lista
   void _eliminarHabito(int index) {
@@ -127,7 +150,9 @@ class _Vista_0State extends State<Vista0> {
                         Switch(
                           value: habito.isActive,
                           activeThumbColor: AppColors.colorBase1,
-                          onChanged: (bool value) {
+                          onChanged: (bool value) async{
+                            // Actualizar el estado del hábito en la base de datos
+                            await DatabaseHelper().actualizarEstadoHabito(habito.id, value,);
                             setState(() {
                               habito.isActive = value;
                             });
@@ -137,7 +162,46 @@ class _Vista_0State extends State<Vista0> {
                         // Botón para eliminar el hábito
                         IconButton(
                           icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                          onPressed: () => _eliminarHabito(index),
+                          onPressed: () async {
+                            final confirmar = await showDialog<bool>(
+                            context: context,
+                            builder: (dialogContext) {
+                              return AlertDialog(
+                                title: const Text('Eliminar hábito'),
+                                content: const Text(
+                                  '¿Estás seguro de que deseas eliminar este hábito?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop(false);
+                                    },
+                                    child: const Text('No'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop(true);
+                                    },
+                                    child: const Text('Sí'),
+                                  ),
+                                ],
+                              );
+                            },
+                            );
+
+                            if (confirmar != true) {
+                            return;
+                            }
+
+                            final filasEliminadas =
+                              await DatabaseHelper().eliminarHabito(habito.id);
+
+                            if (filasEliminadas == 1 && mounted) {
+                            setState(() {
+                              _habitos.removeWhere((item) => item.id == habito.id);
+                            });
+                            }
+                            },
                           tooltip: 'Eliminar hábito',
                         ),
                       ],

@@ -65,7 +65,7 @@ class _InterfazGraficaMenuState extends State<InterfazGraficaMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Somos los Dart')),
+      appBar: AppBar(title: const Text('RIN')),
       backgroundColor: AppColors.colorBase5,
       body: Column(
         children: [
