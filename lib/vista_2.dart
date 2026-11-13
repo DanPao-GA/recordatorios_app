@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:recordatorios_app/AppColors.dart';
 import 'package:flutter/services.dart';
+import 'bdd.dart';
 
 class Vista2 extends StatefulWidget {
   const Vista2({super.key});
@@ -27,6 +28,38 @@ class _Vista2State extends State<Vista2> {
     minutosInput.dispose();
     super.dispose();
   }
+
+final List<IconData> iconosHabitos = [
+  // Deporte y Actividad Física
+  Icons.fitness_center,
+  Icons.directions_run,
+  Icons.directions_bike,
+  Icons.self_improvement,
+  Icons.pool,
+
+  // Estudio y Trabajo
+  Icons.book,
+  Icons.school,
+  Icons.laptop_mac,
+  Icons.edit,
+  Icons.work,
+
+  // Salud y Nutrición
+  Icons.water_drop,
+  Icons.restaurant,
+  Icons.local_dining,
+  Icons.bedtime,
+  Icons.favorite,
+
+  // Productividad y Estilo de Vida
+  Icons.wb_sunny,
+  Icons.timer,
+  Icons.check_circle,
+  Icons.star,
+  Icons.local_florist,
+];
+
+
 
   bool intervaloUnico = false; //
   bool intervaloUnico2 = false; //
@@ -81,7 +114,7 @@ class _Vista2State extends State<Vista2> {
           child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
             children: [
           Text(
-            'Create Custom Break',
+            'Crear recordatorio de intervalos',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -96,7 +129,7 @@ class _Vista2State extends State<Vista2> {
           children: [
             TextField(
             style: TextStyle(color: AppColors.colorBase1),
-                decoration: _inputDecoration('Nombre el recordatorio'),
+                decoration: _inputDecoration('Nombre del recordatorio'),
                 controller: nombreInput,
           )
           ],
@@ -213,7 +246,7 @@ shape: forma, por ejemplo bordes redondeados.
 elevation: altura de la sombra.
 minimumSize: tamaño mínimo del botón
         */ 
-      onPressed: () {
+      onPressed: () async{
 
         if (horasInput.text.trim().isEmpty) {
           horasInput.text = '0';
@@ -221,7 +254,7 @@ minimumSize: tamaño mínimo del botón
         if (minutosInput.text.trim().isEmpty) {
           minutosInput.text = '0';
         }
-        String tipoBreak = !intervaloUnico ? "intervalo" : "Unico";
+        String tipoBreak = "intervalo";
         print(tipoBreak);
 
       if (nombreInput.text.trim().isEmpty){
@@ -232,6 +265,22 @@ minimumSize: tamaño mínimo del botón
         print('nombre: ${nombreInput.text}'); //o uso eso o uso +
         //q salga un mesaje de 'recordatorio creado con exito' 
         //q se borre dsps de escribir
+
+        await DatabaseHelper().insertarHabitoIntervalo(
+            nombre: nombreInput.text,
+            tipo: 'intervalo',
+            intervaloMinutos: int.parse(horasInput.text) * 60 + int.parse(minutosInput.text),
+            fecha: null,
+            hora: null,
+            hSemanalId: null,
+            activo: true,        
+            // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
+            icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+                                    );
+
+
+
+
         horasInput.clear(); //pa q queden vacios
         minutosInput.clear();
         nombreInput.clear();
@@ -249,20 +298,7 @@ minimumSize: tamaño mínimo del botón
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
-//         GestureDetector(
-//   onTap: () {
-//     print("¡Contenedor presionado!");
-//     // Aquí puedes cambiar estados con setState
-//   },
-//   child: Container(
-//     padding: const EdgeInsets.all(16),
-//     decoration: BoxDecoration(
-//       color: Colors.blue,
-//       borderRadius: BorderRadius.circular(10),
-//     ),
-//     child: const Text('Haz clic aquí', style: TextStyle(color: Colors.white)),
-//   ),
-// )
+
 
       ],
     );
@@ -395,75 +431,7 @@ minimumSize: tamaño mínimo del botón
       ],
       ),
         const SizedBox(height: 16.0),
-      // ROW DEL BOTON DEL TIPO
-      // Row(
-      //   mainAxisAlignment: MainAxisAlignment.center,
-      //   children: [
-      //   Expanded(
-      //   child: Container(
-      //     alignment: Alignment.center,
-      //     padding: const EdgeInsets.all(5.0), 
-      //     decoration: BoxDecoration(
-      //       color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4, //AQUI ES EL BOTON Q CAMBIA COLORES
-      //       //color: AppColors.colorBase4,
-      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
-      //       borderRadius: BorderRadius.circular(16.0),
-      //     ),
-      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
-      //     //  children: [
-      //     child: Text(
-      //       'INTERVALO',
-      //       style: TextStyle(
-      //         fontSize: 15,
-      //         fontWeight: FontWeight.bold,
-      //         color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
-      //       ),
-      //     ),
-      //   ),
-      //   ),
-      //   const SizedBox(width: 16.0),
-      //   // 2. El Switch en el medio
-      // Transform.scale(
-      //   scale: 1.2,
-      //   child:
-      //   Switch(
-      //         value: intervaloUnico2,
-      //         activeThumbColor: AppColors.colorBase1,
-      //         onChanged: (bool newValue) {
-      //           setState(() {
-      //             intervaloUnico2 = newValue;
-      //             }
-      //           );
-      //         }
-      //     ),
-      // ),
-      //     const SizedBox(width: 16.0),
-      //     Expanded(
-      //     child: Container(
-      //     alignment: Alignment.center,
-      //     padding: const EdgeInsets.all(5.0), 
-      //     decoration: BoxDecoration(
-      //       color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
-      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
-      //       borderRadius: BorderRadius.circular(16.0),
-      //     ),
-      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
-      //     //  children: [
-      //     child: Text(
-      //       'UNICO',
-      //       style: TextStyle(
-      //         fontSize: 15,
-      //         fontWeight: FontWeight.bold,
-      //         color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4,
-              
-      //       ),
-      //     ),
-      //   ),
-      //   ),
 
-      //       ] //children
-      //    // )
-      //   ),
 
       const SizedBox(height: 16.0),
 
@@ -477,7 +445,7 @@ shape: forma, por ejemplo bordes redondeados.
 elevation: altura de la sombra.
 minimumSize: tamaño mínimo del botón
         */ 
-      onPressed: () {
+      onPressed: () async{
 
        // String tipoBreak = !intervaloUnico2 ? "intervalo" : "Unico";
        // print(tipoBreak);
@@ -506,6 +474,31 @@ minimumSize: tamaño mínimo del botón
         print('CAMPOS VACIOS');
         }
         else{print('nombre: ${nombreInputSemanal.text}');} 
+
+      final hSemanalId = await DatabaseHelper().insertarHSemanal(
+            lunes: lunes,
+             martes: martes,
+             miercoles: miercoles,
+              jueves: jueves,
+             viernes: viernes,
+             sabado: sabado,
+              domingo: domingo,
+              );
+      await DatabaseHelper().insertarHabitoSemanal(
+         nombre: nombreInputSemanal.text,
+         tipo: 'semanal',
+         hora: MaterialLocalizations.of(context).formatTimeOfDay(
+          horaSeleccionada!,
+          alwaysUse24HourFormat: true,
+        ),
+         hSemanalId: hSemanalId,
+         activo: true,
+                     // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
+            icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+
+        );
+
+
         // int horaParaBD = horaSeleccionada!.hour; -> 14
         //String jola = horaSeleccionada!.hour.toString();
         setState(() {
@@ -537,20 +530,7 @@ minimumSize: tamaño mínimo del botón
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
-//         GestureDetector(
-//   onTap: () {
-//     print("¡Contenedor presionado!");
-//     // Aquí puedes cambiar estados con setState
-//   },
-//   child: Container(
-//     padding: const EdgeInsets.all(16),
-//     decoration: BoxDecoration(
-//       color: Colors.blue,
-//       borderRadius: BorderRadius.circular(10),
-//     ),
-//     child: const Text('Haz clic aquí', style: TextStyle(color: Colors.white)),
-//   ),
-// )
+
 
       ]
     );
@@ -699,75 +679,6 @@ Widget _buildColumn3() { //esto es un metodo que devuelve un widget, en este cas
 
       const SizedBox(height: 16.0),
 
-      // ROW DEL BOTON DEL TIPO
-      // Row(
-      //   mainAxisAlignment: MainAxisAlignment.center,
-      //   children: [
-      //   Expanded(
-      //   child: Container(
-      //     alignment: Alignment.center,
-      //     padding: const EdgeInsets.all(5.0), 
-      //     decoration: BoxDecoration(
-      //       color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4, //AQUI ES EL BOTON Q CAMBIA COLORES
-      //       //color: AppColors.colorBase4,
-      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
-      //       borderRadius: BorderRadius.circular(16.0),
-      //     ),
-      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
-      //     //  children: [
-      //     child: Text(
-      //       'INTERVALO',
-      //       style: TextStyle(
-      //         fontSize: 15,
-      //         fontWeight: FontWeight.bold,
-      //         color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
-      //       ),
-      //     ),
-      //   ),
-      //   ),
-      //   const SizedBox(width: 16.0),
-      //   // 2. El Switch en el medio
-      // Transform.scale(
-      //   scale: 1.2,
-      //   child:
-      //   Switch(
-      //         value: intervaloUnico2,
-      //         activeThumbColor: AppColors.colorBase1,
-      //         onChanged: (bool newValue) {
-      //           setState(() {
-      //             intervaloUnico2 = newValue;
-      //             }
-      //           );
-      //         }
-      //     ),
-      // ),
-      //     const SizedBox(width: 16.0),
-      //     Expanded(
-      //     child: Container(
-      //     alignment: Alignment.center,
-      //     padding: const EdgeInsets.all(5.0), 
-      //     decoration: BoxDecoration(
-      //       color: !intervaloUnico2 ? AppColors.colorBase4 : AppColors.colorBase1,
-      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
-      //       borderRadius: BorderRadius.circular(16.0),
-      //     ),
-      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
-      //     //  children: [
-      //     child: Text(
-      //       'UNICO',
-      //       style: TextStyle(
-      //         fontSize: 15,
-      //         fontWeight: FontWeight.bold,
-      //         color: !intervaloUnico2 ? AppColors.colorBase1 : AppColors.colorBase4,
-              
-      //       ),
-      //     ),
-      //   ),
-      //   ),
-
-      //       ] //children
-      //    // )
-      //   ),
 
       const SizedBox(height: 16.0),
 
@@ -781,11 +692,11 @@ shape: forma, por ejemplo bordes redondeados.
 elevation: altura de la sombra.
 minimumSize: tamaño mínimo del botón
         */ 
-      onPressed: () {
+      onPressed: () async{
 
         // String tipoBreak = !intervaloUnico2 ? "intervalo" : "Unico";
         // print(tipoBreak);
-        
+        // ESTOS PRINTS SON DEL TIPO UNICO, Q ES EL Q TIENE FECHA Y HORA, Y NOMBRE
         print('Fecha: ${fechaSeleccionada!.day} / ${fechaSeleccionada!.month} / ${fechaSeleccionada!.year}'); //LAS FECHAS SELECCIONADAS SON ENTEROS')
         print("Hora: ${horaSeleccionadaUnica!.format(context)}"); //.formt ase adapta a la ersona
         // int horaParaBD = horaSeleccionada!.hour; -> 14
@@ -794,8 +705,31 @@ minimumSize: tamaño mínimo del botón
         print('CAMPOS VACIOS');
         }
         else{print('nombre: ${nombreInputUnico.text}');} 
+        
+        if (fechaSeleccionada == null || horaSeleccionadaUnica == null || nombreInputUnico.text.trim().isEmpty) {
+          print('¡Faltan campos por completar!');
+          return; // Detiene la ejecución si no marcó nada
+        }
+        
+        await DatabaseHelper().insertarHabitoUnico(
+                nombre: nombreInputUnico.text,
+                tipo: 'unico',
+                intervaloMinutos: null,
+                fecha: fechaSeleccionada!.toIso8601String().split('T').first,
+                hora: MaterialLocalizations.of(context).formatTimeOfDay(
+                  horaSeleccionadaUnica!,
+                  alwaysUse24HourFormat: true,
+                ),
+                hSemanalId: null,
+                activo: true,                 
+                            // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
+            icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+                 
+                                    );
         setState(() {
             // 2. Devolvemos la hora a su estado inicial vacío
+            
+
             horaSeleccionadaUnica = null;
             fechaSeleccionada = null;
             nombreInputUnico.clear();
