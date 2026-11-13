@@ -506,6 +506,31 @@ minimumSize: tamaño mínimo del botón
         print('CAMPOS VACIOS');
         }
         else{print('nombre: ${nombreInputSemanal.text}');} 
+
+      final hSemanalId = await DatabaseHelper().insertarHSemanal(
+            lunes: lunes,
+             martes: martes,
+             miercoles: miercoles,
+              jueves: jueves,
+             viernes: viernes,
+             sabado: sabado,
+              domingo: domingo,
+              );
+      await DatabaseHelper().insertarHabitoSemanal(
+        nombre: nombreInputSemanal.text,
+        tipo: 'semanal',
+        hora: MaterialLocalizations.of(context).formatTimeOfDay(
+          horaSeleccionada!,
+          alwaysUse24HourFormat: true,
+        ),
+         hSemanalId: hSemanalId,
+         activo: true,
+                     // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
+            icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+
+        );
+
+
         // int horaParaBD = horaSeleccionada!.hour; -> 14
         //String jola = horaSeleccionada!.hour.toString();
         setState(() {
