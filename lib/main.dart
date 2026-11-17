@@ -5,12 +5,14 @@ import 'dart:io'; // Para detectar la plataforma (Platform.isWindows)
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Necesario para Windows/Linux/macOS
 import 'package:recordatorios_app/bdd.dart';
+import 'package:recordatorios_app/notificaciones.dart';
 //notificaciones 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+// import 'package:timezone/data/latest_all.dart' as tz;
+// import 'package:timezone/timezone.dart' as tz;
+import 'package:local_notifier/local_notifier.dart';
 
-void main() async {
+Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Configuración para Windows o plataformas de escritorio
@@ -22,20 +24,33 @@ void main() async {
   // Esto inicializa la bdd, no tocar
   await DatabaseHelper().database; //fua ya iba yo a tocar esto pq no sabia q era JAJAJAJA
 
-// Esto inicializa las notificaciones, quieto
-    tz.initializeTimeZones();
+  // flutter_local_notifications no tiene implementación registrada para Windows.
+  // if (!Platform.isWindows) {
+  //   tz.initializeTimeZones();
 
-    InitializationSettings initializationSettings = InitializationSettings();
+  //   final InitializationSettings initializationSettings = InitializationSettings();
 
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  //   // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-    await flutterLocalNotificationsPlugin.initialize(
+  //   await flutterLocalNotificationsPlugin.initialize(
+        
+  //     initializationSettings,
+  //     onDidReceiveNotificationResponse: (details) {
+  //       print('En efecto');
+  //     },
+  //   );
+  // }
 
-        initializationSettings, onDidReceiveNotificationResponse: (details) {
-          print('En efecto');  
-        },
+  await localNotifier.setup(appName: 'RIN');
 
-    );
+  if (args.length == 2 && args[0] == '--notificar') {
+    await LocalNotification(
+      title: 'Recordatorio',
+      body: args[1],
+    ).show();
+
+    exit(0);
+  }
 
 
   runApp(const PantallaRecordatorios());
