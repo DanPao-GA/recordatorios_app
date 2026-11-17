@@ -1,8 +1,11 @@
 import 'dart:math';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:recordatorios_app/AppColors.dart';
 import 'package:flutter/services.dart';
+import 'package:recordatorios_app/notificaciones.dart';
 import 'bdd.dart';
 
 class Vista2 extends StatefulWidget {
@@ -101,29 +104,27 @@ final List<IconData> iconosHabitos = [
 
   Widget _buildColumn() { //esto es un metodo que devuelve un widget, en este caso una columna con dos cuadros de texto y un titulo
     // no se usa un row antes porque queremos que los cuadros de texto se acomoden uno debajo del otro, y no uno al lado del otro
-    return Column( //regresa columna pa q se acomoden los cuadros de texto uno debajo del otro, y no uno al lado del otro
+      return Column( //regresa columna pa q se acomoden los cuadros de texto uno debajo del otro, y no uno al lado del otro
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.all(18.0),
           decoration: BoxDecoration(
             color: AppColors.colorBase4,
             border: Border.all(color: AppColors.colorBase2, width: 2.0),
             borderRadius: BorderRadius.circular(16.0),
           ),
-          child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
-            children: [
-          Text(
-            'Crear recordatorio de intervalos',
+          //child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+          child: Text(
+            'Create Custom Break',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.colorBase1,
             ),
           ),
-            ]
-          )
         ),
+
         const SizedBox(height: 16.0),
         Column(
           children: [
@@ -182,7 +183,7 @@ final List<IconData> iconosHabitos = [
          // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
           //  children: [
           child: Text(
-            'INTERVALO',
+            'TIPO INTERVALO',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -191,45 +192,45 @@ final List<IconData> iconosHabitos = [
           ),
         ),
         ),
-        const SizedBox(width: 16.0),
-        // 2. El Switch en el medio
-      Transform.scale(
-        scale: 1.2,
-        child:
-        Switch(
-              value: intervaloUnico,
-              activeThumbColor: AppColors.colorBase1,
-              onChanged: (bool newValue) {
-                setState(() {
-                  intervaloUnico = newValue;
-                  }
-                );
-              }
-          ),
-      ),
-          const SizedBox(width: 16.0),
-          Expanded(
-          child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(5.0), 
-          decoration: BoxDecoration(
-            color: !intervaloUnico ? AppColors.colorBase4 : AppColors.colorBase1,
-            border: Border.all(color: AppColors.colorBase2, width: 2.0),
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-         // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
-          //  children: [
-          child: Text(
-            'UNICO',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: !intervaloUnico ? AppColors.colorBase1 : AppColors.colorBase4,
+      //   const SizedBox(width: 16.0),
+      //   // 2. El Switch en el medio
+      // Transform.scale(
+      //   scale: 1.2,
+      //   child:
+      //   Switch(
+      //         value: intervaloUnico,
+      //         activeThumbColor: AppColors.colorBase1,
+      //         onChanged: (bool newValue) {
+      //           setState(() {
+      //             intervaloUnico = newValue;
+      //             }
+      //           );
+      //         }
+      //     ),
+      // ),
+      //     const SizedBox(width: 16.0),
+      //     Expanded(
+      //     child: Container(
+      //     alignment: Alignment.center,
+      //     padding: const EdgeInsets.all(5.0), 
+      //     decoration: BoxDecoration(
+      //       color: !intervaloUnico ? AppColors.colorBase4 : AppColors.colorBase1,
+      //       border: Border.all(color: AppColors.colorBase2, width: 2.0),
+      //       borderRadius: BorderRadius.circular(16.0),
+      //     ),
+      //    // child: Column ( //esto pa tener unatextfield dentro edl otro, container solo puede tener un child, por eso children
+      //     //  children: [
+      //     child: Text(
+      //       'UNICO',
+      //       style: TextStyle(
+      //         fontSize: 15,
+      //         fontWeight: FontWeight.bold,
+      //         color: !intervaloUnico ? AppColors.colorBase1 : AppColors.colorBase4,
               
-            ),
-          ),
-        ),
-        ),
+      //       ),
+      //     ),
+      //   ),
+      //   ),
 
             ] //children
          // )
@@ -237,15 +238,7 @@ final List<IconData> iconosHabitos = [
 
       const SizedBox(height: 16.0),
       ElevatedButton(
-        /*
-        stylefrom
-        backgroundColor: color del fondo.
-foregroundColor: color del texto y del icono.
-padding: espacio interno.
-shape: forma, por ejemplo bordes redondeados.
-elevation: altura de la sombra.
-minimumSize: tamaño mínimo del botón
-        */ 
+
       onPressed: () async{
 
         if (horasInput.text.trim().isEmpty) {
@@ -266,7 +259,7 @@ minimumSize: tamaño mínimo del botón
         //q salga un mesaje de 'recordatorio creado con exito' 
         //q se borre dsps de escribir
 
-        await DatabaseHelper().insertarHabitoIntervalo(
+        final int idHabitoCreadoIntervalo = await DatabaseHelper().insertarHabitoIntervalo(
             nombre: nombreInput.text,
             tipo: 'intervalo',
             intervaloMinutos: int.parse(horasInput.text) * 60 + int.parse(minutosInput.text),
@@ -278,7 +271,28 @@ minimumSize: tamaño mínimo del botón
             icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
                                     );
 
+  await guardarRecordatorioProgramadoIntervalo(
+            id: idHabitoCreadoIntervalo,
+            nombre: nombreInput.text.trim(),
+            hora: horasInput,
+            minuto: minutosInput
+          );
 
+
+      // String horaFormateada =  MaterialLocalizations.of(context).formatTimeOfDay(
+      //     horaSeleccionada!,
+      //     alwaysUse24HourFormat: true,
+      //   );
+
+      //    await guardarRecordatorioProgramadoUnico(
+      //       id: idHabitoCreado,
+      //       nombre: nombreInputSemanal.text.trim(),
+      //       fecha: fechaSeleccionada,
+      //       hora: horaFormateada,
+      //     );
+
+
+      //     guardarRecordatorioProgramadoUnico(id, nombre, fecha, horasInput);
 
 
         horasInput.clear(); //pa q queden vacios
@@ -475,28 +489,53 @@ minimumSize: tamaño mínimo del botón
         }
         else{print('nombre: ${nombreInputSemanal.text}');} 
 
-      final hSemanalId = await DatabaseHelper().insertarHSemanal(
-            lunes: lunes,
-             martes: martes,
-             miercoles: miercoles,
-              jueves: jueves,
-             viernes: viernes,
-             sabado: sabado,
-              domingo: domingo,
-              );
-      await DatabaseHelper().insertarHabitoSemanal(
-         nombre: nombreInputSemanal.text,
-         tipo: 'semanal',
-         hora: MaterialLocalizations.of(context).formatTimeOfDay(
+      String horaFormateada =  MaterialLocalizations.of(context).formatTimeOfDay(
           horaSeleccionada!,
           alwaysUse24HourFormat: true,
-        ),
-         hSemanalId: hSemanalId,
-         activo: true,
+        );
+
+      final hSemanalId = await DatabaseHelper().insertarHSemanal(
+            lunes: lunes,
+            martes: martes,
+            miercoles: miercoles,
+              jueves: jueves,
+            viernes: viernes,
+            sabado: sabado,
+              domingo: domingo,
+              );
+      final int idHabitoCreado = await DatabaseHelper().insertarHabitoSemanal(
+        nombre: nombreInputSemanal.text,
+        tipo: 'semanal',
+        hora: horaFormateada,
+        hSemanalId: hSemanalId,
+        activo: true,
                      // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
             icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
 
         );
+
+        for (String dia in diasSeleccionados){
+        
+       // String proximaFechaCalculada = obtenerProximaFechaSemanal(dia, horaSeleccionada!);
+        await guardarRecordatorioProgramadoSemanal(
+            id: idHabitoCreado,
+            nombre: nombreInputSemanal.text.trim(),
+            dia: dia,
+            hora: horaFormateada,
+          );
+       // await guardarRecordatorioProgramado(id:idHabitoCreado, nombre: nombreInputSemanal.text.trim(), fecha: proximaFechaCalculada, hora: horaFormateada);
+
+        };
+        if (!Platform.isWindows) {
+          List<PendingNotificationRequest> pendientes =
+              await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+
+          print("--- NOTIFICACIONES PROGRAMADAS (${pendientes.length}) ---");
+
+          for (var notif in pendientes) {
+            print("ID: ${notif.id} | Título: ${notif.title} | Cuerpo: ${notif.body}");
+          }
+        }
 
 
         // int horaParaBD = horaSeleccionada!.hour; -> 14
@@ -711,7 +750,7 @@ minimumSize: tamaño mínimo del botón
           return; // Detiene la ejecución si no marcó nada
         }
         
-        await DatabaseHelper().insertarHabitoUnico(
+        final int idHabitoCreadoUnico = await DatabaseHelper().insertarHabitoUnico(
                 nombre: nombreInputUnico.text,
                 tipo: 'unico',
                 intervaloMinutos: null,
@@ -724,8 +763,27 @@ minimumSize: tamaño mínimo del botón
                 activo: true,                 
                             // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
             icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
-                 
                                     );
+
+
+      String horaFormateada =  MaterialLocalizations.of(context).formatTimeOfDay(
+          horaSeleccionadaUnica!,
+          alwaysUse24HourFormat: true,
+        );
+
+        await guardarRecordatorioProgramadoUnico(
+            id: idHabitoCreadoUnico,
+            nombre: nombreInputUnico.text.trim(),
+            fecha: fechaSeleccionada,
+            hora: horaFormateada,
+          );
+
+
+
+
+
+
+
         setState(() {
             // 2. Devolvemos la hora a su estado inicial vacío
             
