@@ -413,11 +413,11 @@ final List<IconData> iconosHabitos = [
           child:
       ElevatedButton(onPressed: () async { //async admite q habra un momento de vlor nulos,
 
-          final horaFinal = await _seleccionarHora(context, horaSeleccionada); //await hace q se detenga en esa funciona, await no puede ir sin async
+          final hora_final = await _seleccionarHora(context, horaSeleccionada); //await hace q se detenga en esa funciona, await no puede ir sin async
 
-          if (horaFinal != null) {
+          if (hora_final != null) {
             setState(() {
-              horaSeleccionada = horaFinal; // 👈 ¡Aquí sí se actualiza tu variable original!
+              horaSeleccionada = hora_final; // 👈 ¡Aquí sí se actualiza tu variable original!
           }); }
       },
       style: ElevatedButton.styleFrom( //EL STYLEFROM es 
@@ -682,11 +682,11 @@ Widget _buildColumn3() { //esto es un metodo que devuelve un widget, en este cas
 
           child: ElevatedButton(onPressed: () async {
 
-            final horaFinal = await _seleccionarHora(context, horaSeleccionadaUnica);
+            final hora_final = await _seleccionarHora(context, horaSeleccionadaUnica);
 
-            if (horaFinal != null) {
+            if (hora_final != null) {
               setState(() {
-                horaSeleccionadaUnica = horaFinal; // 👈 ¡Aquí sí se actualiza tu variable original!
+                horaSeleccionadaUnica = hora_final; // 👈 ¡Aquí sí se actualiza tu variable original!
             }); }
         },
         style: ElevatedButton.styleFrom( //EL STYLEFROM es 
