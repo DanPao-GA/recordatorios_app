@@ -22,7 +22,6 @@ class _Vista2State extends State<Vista2> {
   final TextEditingController nombreInput = TextEditingController(); //esto 
   final TextEditingController nombreInputSemanal = TextEditingController(); //esto 
   final TextEditingController nombreInputUnico = TextEditingController(); //esto 
-
   
   // (Opcional pero muy importante) Liberas la memoria cuando la vista se destruye
   @override
@@ -76,6 +75,9 @@ final List<IconData> iconosHabitos = [
   TimeOfDay? horaSeleccionada;
   TimeOfDay? horaSeleccionadaUnica;
   DateTime? fechaSeleccionada;
+  IconData iconoSeleccionado = Icons.fitness_center;
+  IconData iconoSeleccionadoSemanal = Icons.fitness_center;
+  IconData iconoSeleccionadoUnico = Icons.fitness_center;
 
 
   InputDecoration _inputDecoration(String hintText) {
@@ -106,6 +108,7 @@ final List<IconData> iconosHabitos = [
     // no se usa un row antes porque queremos que los cuadros de texto se acomoden uno debajo del otro, y no uno al lado del otro
       return Column( //regresa columna pa q se acomoden los cuadros de texto uno debajo del otro, y no uno al lado del otro
       crossAxisAlignment: CrossAxisAlignment.stretch,
+
       children: [
         Container(
           padding: const EdgeInsets.all(18.0),
@@ -125,16 +128,67 @@ final List<IconData> iconosHabitos = [
           ),
         ),
 
-        const SizedBox(height: 16.0),
-        Column(
-          children: [
-            TextField(
-            style: TextStyle(color: AppColors.colorBase1),
-                decoration: _inputDecoration('Nombre del recordatorio'),
-                controller: nombreInput,
-          )
-          ],
-        ),
+
+
+        const SizedBox(height: 16.0),Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          
+          Expanded(
+            child: TextField(
+              style: TextStyle(color: AppColors.colorBase1),
+              decoration: _inputDecoration('Nombre del recordatorio'),
+              controller: nombreInput,
+            ),
+          ),
+          const SizedBox(width: 10), // Un pequeño espacio entre el input y el botón
+          
+          // Cambiamos el Expanded por un contenedor con tamaño controlado o sin Expanded
+          PopupMenuButton<IconData>(
+            tooltip: 'Elige un icono para el hábito',
+            initialValue: iconoSeleccionado,
+            color: AppColors.colorBase2,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.colorBase1,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color:  AppColors.colorBase3.withOpacity(0.5)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(iconoSeleccionado, color: AppColors.colorBase3, size: 26),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_drop_down, color: AppColors.colorBase3),
+                ],
+              ),
+            ),
+            itemBuilder: (BuildContext context) {
+              return iconosHabitos.map((IconData icono) {
+                return PopupMenuItem<IconData>(
+                  value: icono,
+                  child: Row(
+                    children: [
+                      Icon(icono, color: AppColors.colorBase5),
+                      const SizedBox(width: 12),
+                      Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+            onSelected: (IconData nuevoIcono) {
+              setState(() {
+                iconoSeleccionado = nuevoIcono;
+              });
+            },
+          ),
+        ],
+      ),
+
+
+
         const SizedBox(height: 16.0),
         Row(
           children: [
@@ -256,6 +310,8 @@ final List<IconData> iconosHabitos = [
         print('horas: ${horasInput.text}'); //o uso eso o uso +
         print('minutos: ${minutosInput.text}'); //o uso eso o uso +
         print('nombre: ${nombreInput.text}'); //o uso eso o uso +
+        print('Icono: ${iconoSeleccionado}');
+       // print(Icon(IconData(0xe0db, fontFamily: 'MaterialIcons')));
         //q salga un mesaje de 'recordatorio creado con exito' 
         //q se borre dsps de escribir
 
@@ -268,7 +324,8 @@ final List<IconData> iconosHabitos = [
             hSemanalId: null,
             activo: true,        
             // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
-            icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+            icono: iconoSeleccionado.codePoint , // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+           // icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
                                     );
 
   await guardarRecordatorioProgramadoIntervalo(
@@ -278,6 +335,7 @@ final List<IconData> iconosHabitos = [
             minuto: minutosInput
           );
 
+ // await imprimirHabitosDesdeBD(DatabaseHelper());
 
       // String horaFormateada =  MaterialLocalizations.of(context).formatTimeOfDay(
       //     horaSeleccionada!,
@@ -343,13 +401,68 @@ final List<IconData> iconosHabitos = [
         ),
 
         const SizedBox(height: 16.0),
-       // Expanded(
-              //child:
-              TextField(
-            style: TextStyle(color: AppColors.colorBase1),
-                decoration: _inputDecoration('Nombre del recordatorio Semanal'),
-                controller: nombreInputSemanal,),
-         //     ),
+        Row(
+
+       
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          
+          Expanded(
+            child: TextField(
+              style: TextStyle(color: AppColors.colorBase1),
+              decoration: _inputDecoration('Nombre del recordatorio'),
+              controller: nombreInputSemanal,
+            ),
+          ),
+          const SizedBox(width: 10), // Un pequeño espacio entre el input y el botón
+          
+          // Cambiamos el Expanded por un contenedor con tamaño controlado o sin Expanded
+          PopupMenuButton<IconData>(
+            tooltip: 'Elige un icono para el hábito',
+            initialValue: iconoSeleccionadoSemanal,
+            color: AppColors.colorBase2,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.colorBase1,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color:  AppColors.colorBase3.withOpacity(0.5)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(iconoSeleccionadoSemanal, color: AppColors.colorBase3, size: 26),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_drop_down, color: AppColors.colorBase3),
+                ],
+              ),
+            ),
+            itemBuilder: (BuildContext context) {
+              return iconosHabitos.map((IconData icono) {
+                return PopupMenuItem<IconData>(
+                  value: icono,
+                  child: Row(
+                    children: [
+                      Icon(icono, color: AppColors.colorBase5),
+                      const SizedBox(width: 12),
+                      Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+            onSelected: (IconData nuevoIcono) {
+              setState(() {
+                iconoSeleccionadoSemanal = nuevoIcono;
+              });
+            },
+          ),
+        ],
+       ),
+
+
+
+
 
         const SizedBox(height: 16.0),
 
@@ -489,6 +602,8 @@ minimumSize: tamaño mínimo del botón
         }
         else{print('nombre: ${nombreInputSemanal.text}');} 
 
+        print('Icono: ${iconoSeleccionadoSemanal}');
+
       String horaFormateada =  MaterialLocalizations.of(context).formatTimeOfDay(
           horaSeleccionada!,
           alwaysUse24HourFormat: true,
@@ -510,7 +625,8 @@ minimumSize: tamaño mínimo del botón
         hSemanalId: hSemanalId,
         activo: true,
                      // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
-            icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+        icono: iconoSeleccionadoSemanal.codePoint // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+          //  icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
 
         );
 
@@ -603,11 +719,64 @@ Widget _buildColumn3() { //esto es un metodo que devuelve un widget, en este cas
 
         const SizedBox(height: 16.0),
 
-              TextField(
-            style: TextStyle(color: AppColors.colorBase1),
-                decoration: _inputDecoration('Nombre del recordatorio Unico'),
-                controller: nombreInputUnico,),
+        Row (
 
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          
+          Expanded(
+            child: TextField(
+              style: TextStyle(color: AppColors.colorBase1),
+              decoration: _inputDecoration('Nombre del recordatorio'),
+              controller: nombreInputUnico,
+            ),
+          ),
+          const SizedBox(width: 10), // Un pequeño espacio entre el input y el botón
+          
+          // Cambiamos el Expanded por un contenedor con tamaño controlado o sin Expanded
+          PopupMenuButton<IconData>(
+            tooltip: 'Elige un icono para el hábito',
+            initialValue: iconoSeleccionadoUnico,
+            color: AppColors.colorBase2,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.colorBase1,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color:  AppColors.colorBase3.withOpacity(0.5)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(iconoSeleccionadoUnico, color: AppColors.colorBase3, size: 26),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_drop_down, color: AppColors.colorBase3),
+                ],
+              ),
+            ),
+            itemBuilder: (BuildContext context) {
+              return iconosHabitos.map((IconData icono) {
+                return PopupMenuItem<IconData>(
+                  value: icono,
+                  child: Row(
+                    children: [
+                      Icon(icono, color: AppColors.colorBase5),
+                      const SizedBox(width: 12),
+                      Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+            onSelected: (IconData nuevoIcono) {
+              setState(() {
+                iconoSeleccionadoUnico = nuevoIcono;
+              });
+            },
+          ),
+        ],
+      ),
+        
         const SizedBox(height: 16.0),
 
         Column(
@@ -749,6 +918,7 @@ minimumSize: tamaño mínimo del botón
           print('¡Faltan campos por completar!');
           return; // Detiene la ejecución si no marcó nada
         }
+      print('Icono: ${iconoSeleccionadoUnico}');
         
         final int idHabitoCreadoUnico = await DatabaseHelper().insertarHabitoUnico(
                 nombre: nombreInputUnico.text,
@@ -762,7 +932,8 @@ minimumSize: tamaño mínimo del botón
                 hSemanalId: null,
                 activo: true,                 
                             // AQUI YA TUVO QUE HABER SIDO SELECCIONADO EL ICONO
-            icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+            icono: iconoSeleccionadoUnico.codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
+            //icono: iconosHabitos[Random().nextInt(iconosHabitos.length)].codePoint, // Selecciona un icono aleatorio de la lista y obtiene su codePoint                        
                                     );
 
 
@@ -891,6 +1062,16 @@ Future<void> _seleccionarFecha(BuildContext context) async { //aync indica q hay
 
 }
   
+//   Future<void> imprimirHabitosDesdeBD(Database db) async {
+//   // Corregido 'habzitos' a 'habitos' y quitado el símbolo inválido de la lista
+//   final resultados = await db.query('habitos');
+
+//   print('===== CONTENIDO DE LA TABLA HABITOS =====');
+//   for (var habitadores in resultados) {
+//     print('ID: ${habitadores['id']} | Nombre: ${habitadores['nombre']} | Icono (codePoint): ${habitadores['icono']}');
+//   }
+//   print('=========================================');
+// }
 
 
 
