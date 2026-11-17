@@ -53,8 +53,10 @@ Future<void> main(List<String> args) async {
   }
 
 
+
   runApp(const PantallaRecordatorios());
 }
+
 
 class PantallaRecordatorios extends StatelessWidget {
   const PantallaRecordatorios({super.key});
@@ -70,5 +72,6 @@ class PantallaRecordatorios extends StatelessWidget {
       ),
       home: const InterfazGraficaMenu(title: 'Interfaz Gráfica Menu'),
     );
+    
   }
 }

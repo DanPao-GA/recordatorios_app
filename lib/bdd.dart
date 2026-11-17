@@ -213,8 +213,15 @@ Future<int> eliminarHabito(int id) async {
   );
 }
 
+// Future<void> imprimirHabitosDesdeBD(Database db) async {
+//   // Corregido 'habzitos' a 'habitos' y quitado el símbolo inválido de la lista
+//   final resultados = await db.query('habitos');
 
-  
-
+//   print('===== CONTENIDO DE LA TABLA HABITOS =====');
+//   for (var habitadores in resultados) {
+//     print('ID: ${habitadores['id']} | Nombre: ${habitadores['nombre']} | Icono (codePoint): ${habitadores['icono']}');
+//   }
+//   print('=========================================');
+// }
 
 }
