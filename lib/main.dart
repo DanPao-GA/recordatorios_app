@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:recordatorios_app/interfaz_grafica_menu.dart';
 import 'package:recordatorios_app/AppColors.dart';
 import 'dart:io'; // Para detectar la plataforma (Platform.isWindows)
-import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Necesario para Windows/Linux/macOS
+import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Necesario para Windows/Linux/macOSflutter run -d windows
 import 'package:recordatorios_app/bdd.dart';
 //notificaciones 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
