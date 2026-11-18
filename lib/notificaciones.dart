@@ -39,7 +39,8 @@ Future<void> guardarRecordatorioProgramadoSemanal( {
     throw ArgumentError.value(dia, 'dia', 'Día de la semana no reconocido.');
   }
   
-  final String nombreTarea = 'Habito_${id}_$codigoDia';
+  //final String nombreTarea = 'Habito_${id}_$codigoDia';
+  final String nombreTarea = '${id}_Habito';
 
   final String ntl =  nombreTarea.replaceAll("'", "''");
 
@@ -53,7 +54,7 @@ final String contenidoPs = '''
 \$notification.Icon = [System.Drawing.SystemIcons]::Information
 \$notification.BalloonTipIcon = 'Info'
 \$notification.BalloonTipTitle = 'RIN: \n$nombre'
-\$notification.BalloonTipText = 'HA LLEGADO LA HORA DE: $nombre'
+\$notification.BalloonTipText = 'HA LLEGADO LA HORA DE: $nombre !'
 \$notification.Visible = \$true
 \$notification.ShowBalloonTip(10000)
 Start-Sleep -s 10
@@ -105,8 +106,9 @@ Future<void> guardarRecordatorioProgramadoUnico( {
     }
   
   final String fechaStr = fecha.toString().split(' ').first.replaceAll(RegExp(r'[/\\:\s]'), '');
-  final String nombreTarea = 'HabitoUnico_${id}_$fechaStr';
   
+  //final String nombreTarea = 'HabitoUnico_${id}_$fechaStr';
+  final String nombreTarea = '${id}_Habito';
   final String ntl =  nombreTarea.replaceAll("'", "''");
 
   final Directory tempDir = Directory.systemTemp;
@@ -118,7 +120,7 @@ final String contenidoPs = '''
 \$notification.Icon = [System.Drawing.SystemIcons]::Information
 \$notification.BalloonTipIcon = 'Info'
 \$notification.BalloonTipTitle = 'RIN: \n$nombre'
-\$notification.BalloonTipText = 'HA LLEGADO LA HORA DE: $nombre'
+\$notification.BalloonTipText = 'HA LLEGADO LA HORA DE: $nombre !'
 \$notification.Visible = \$true
 \$notification.ShowBalloonTip(10000)
 Start-Sleep -s 10
@@ -169,7 +171,8 @@ Future<void> guardarRecordatorioProgramadoIntervalo( {
   required int id,
   required String nombre, 
   required minuto,
-  required hora
+  required hora,
+  required icono
   
   } ) async {
 
@@ -180,10 +183,12 @@ Future<void> guardarRecordatorioProgramadoIntervalo( {
 final int horasInt = int.parse(hora.text.isEmpty ? '0' : hora.text);
 final int minutosInt = int.parse(minuto.text.isEmpty ? '0' : minuto.text);
 
+icono = '🔔';
 // 2. Ahora sí puedes hacer la operación matemática limpia
 final int intervalo = (horasInt * 60) + minutosInt;
 
-  final String nombreTarea = 'HabitoIntervalo_${id}_$intervalo';
+  //final String nombreTarea = 'HabitoIntervalo_${id}_$intervalo';
+  final String nombreTarea = '${id}_Habito';
   
   final String ntl =  nombreTarea.replaceAll("'", "''");
 
@@ -196,7 +201,7 @@ final String contenidoPs = '''
 \$notification.Icon = [System.Drawing.SystemIcons]::Information
 \$notification.BalloonTipIcon = 'Info'
 \$notification.BalloonTipTitle = 'RIN: \n$nombre'
-\$notification.BalloonTipText = 'HA LLEGADO LA HORA DE: $nombre'
+\$notification.BalloonTipText = 'HA LLEGADO LA HORA DE: $nombre !'
 \$notification.Visible = \$true
 \$notification.ShowBalloonTip(10000)
 Start-Sleep -s 10
@@ -215,8 +220,8 @@ final String accion = 'powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypas
     '/TN', ntl, //NOMBRE Q SE VA A PONER
     '/TR', accion, //ACCION DEL TASK SCHEDULER
    // '/ST', hora, // HORA
-    '/IT',
-    '/F',
+    '/IT',  //interactuar con el escritorio 
+    '/F', //forzar
   ];
 
   final resultado = await Process.run('schtasks', argumentos);
@@ -239,44 +244,37 @@ final String accion = 'powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypas
 
 
 
-Future<void> cancelarRecordatorioProgramadosSemanal({
-  required int id,
-  required Iterable<String> dias,
-}) async {
-  if (!Platform.isWindows) {
-    throw UnsupportedError('La cancelación está implementada para Windows.');
+Future<void> cancelarRecordatorioProgramados( int id, String estado) async {
+
+  String nombreTask = '${id}_Habito';
+
+  await Process.run('schtasks',['/Change', '/TN', nombreTask, estado]);
+  if (estado == '/Disable'){
+  print('Tarea $nombreTask deshabilitada en Windows.');
   }
-
-  const diasWindows = <String, String>{
-    'lunes': 'MON',
-    'martes': 'TUE',
-    'miércoles': 'WED',
-    'jueves': 'THU',
-    'viernes': 'FRI',
-    'sábado': 'SAT',
-    'domingo': 'SUN',
-  };
-
-  for (final String dia in dias) {
-    final String? codigoDia = diasWindows[dia.toLowerCase()];
-    if (codigoDia == null) {
-      throw ArgumentError.value(dia, 'dia', 'Día de la semana no reconocido.');
-    }
-
-    final String nombreTarea = 'RecordatorioHabito_${id}_$codigoDia';
-    final argumentos = ['/Delete', '/TN', nombreTarea, '/F'];
-    final resultado = await Process.run('schtasks', argumentos);
-
-    if (resultado.exitCode != 0) {
-      throw ProcessException(
-        'schtasks',
-        argumentos,
-        resultado.stderr.toString(),
-        resultado.exitCode,
-      );
-    }
+  else {
+    print('Tarea $nombreTask habilitada en Windows.');
   }
 }
+
+
+// Future<void> cancelarRecordatorioProgramados( int id) async {
+
+//   String nombreTask = '${id}_Habito';
+
+//   await Process.run('schtasks',['/Change', '/TN', nombreTask, '/Disable']);
+//   print('Tarea $nombreTask deshabilitada en Windows.');
+// }
+
+
+Future<void> eliminarRecordatorioProgramados( int id) async {
+
+  String nombreTaskEDelete = '${id}_Habito';
+
+  await Process.run('schtasks', ['/Delete', '/TN', nombreTaskEDelete, '/F']);
+  print('Tarea $nombreTaskEDelete eliminada en Windows.');
+}
+
 
 
 

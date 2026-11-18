@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recordatorios_app/AppColors.dart';
+import 'package:recordatorios_app/notificaciones.dart';
 import 'bdd.dart';
 
 // Modelo de Hábito que incluye su temporizador (intervalo en minutos)
@@ -155,6 +156,12 @@ class _Vista_0State extends State<Vista0> {
                             await DatabaseHelper().actualizarEstadoHabito(habito.id, value,);
                             setState(() {
                               habito.isActive = value;
+                              if ( habito.isActive == false){
+                                cancelarRecordatorioProgramados(habito.id, '/Disable');
+                              }
+                              if ( habito.isActive == true){
+                                cancelarRecordatorioProgramados(habito.id, '/Enable');
+                              }
                             });
                           },
                         ),
@@ -199,6 +206,7 @@ class _Vista_0State extends State<Vista0> {
                             if (filasEliminadas == 1 && mounted) {
                             setState(() {
                               _habitos.removeWhere((item) => item.id == habito.id);
+                              eliminarRecordatorioProgramados(habito.id);
                             });
                             }
                             },

@@ -169,10 +169,11 @@ final List<IconData> iconosHabitos = [
                 return PopupMenuItem<IconData>(
                   value: icono,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(icono, color: AppColors.colorBase5),
                       const SizedBox(width: 12),
-                      Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
+                     // Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
                     ],
                   ),
                 );
@@ -332,7 +333,8 @@ final List<IconData> iconosHabitos = [
             id: idHabitoCreadoIntervalo,
             nombre: nombreInput.text.trim(),
             hora: horasInput,
-            minuto: minutosInput
+            minuto: minutosInput,
+            icono: String.fromCharCode(iconoSeleccionado.codePoint)
           );
 
  // await imprimirHabitosDesdeBD(DatabaseHelper());
@@ -442,10 +444,11 @@ final List<IconData> iconosHabitos = [
                 return PopupMenuItem<IconData>(
                   value: icono,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(icono, color: AppColors.colorBase5),
                       const SizedBox(width: 12),
-                      Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
+                     // Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
                     ],
                   ),
                 );
@@ -759,10 +762,11 @@ Widget _buildColumn3() { //esto es un metodo que devuelve un widget, en este cas
                 return PopupMenuItem<IconData>(
                   value: icono,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(icono, color: AppColors.colorBase5),
                       const SizedBox(width: 12),
-                      Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
+                     // Text('Icono ${iconosHabitos.indexOf(icono) + 1}'),
                     ],
                   ),
                 );
