@@ -36,6 +36,7 @@ class _Recordatorio {
   final int hora; // solo semanal
   final int minuto; // solo semanal
   final Set<int> dias; // solo semanal (1 = lunes ... 7 = domingo)
+  final DateTime? inicio; // solo intervalo: desde cuándo cuenta (se reinicia al activarlo)
 
   _Recordatorio({
     required this.id,
@@ -47,15 +48,16 @@ class _Recordatorio {
     this.hora = 0,
     this.minuto = 0,
     this.dias = const {},
+    this.inicio,
   });
 
   // Cuándo suena la próxima vez (null si ya no volverá a sonar)
   DateTime? siguiente(DateTime ahora) {
     final c = cada;
     if (c != null) {
-      final ciclos =
-          ahora.difference(_inicioApp).inMicroseconds ~/ c.inMicroseconds;
-      return _inicioApp.add(c * (ciclos + 1));
+      final base = inicio ?? _inicioApp;
+      final ciclos = ahora.difference(base).inMicroseconds ~/ c.inMicroseconds;
+      return base.add(c * (ciclos + 1));
     }
 
     final f = fechaUnica;
@@ -77,7 +79,9 @@ class _Recordatorio {
   int disparados(DateTime desde, DateTime hasta) {
     final c = cada;
     if (c != null) {
-      return hasta.difference(desde).inMicroseconds ~/ c.inMicroseconds;
+      final base = inicio ?? _inicioApp;
+      final desdeReal = base.isAfter(desde) ? base : desde;
+      return hasta.difference(desdeReal).inMicroseconds ~/ c.inMicroseconds;
     }
 
     final f = fechaUnica;
@@ -195,6 +199,7 @@ class _Vista1State extends State<Vista1> {
             tipo: tipo,
             icono: icono,
             cada: Duration(minutes: minutos),
+            inicio: inicioHabitos[id] ?? _inicioApp,
           ));
         }
       } else if (tipo == 'unico') {

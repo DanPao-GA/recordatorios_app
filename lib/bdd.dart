@@ -1,6 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+final Map<int, DateTime> inicioHabitos = {};
+
 class DatabaseHelper {
   // Patrón Singleton para una única instancia del helper
   // Sinceramente no se que es, pero se que es por una cuestion de rendimiento
@@ -181,7 +183,9 @@ Future <int> insertarHabitoSemanal({
       'activo': activo ? 1 : 0, // Convertir bool a entero
       'icono': icono, // Guardar el icono como un entero (codepoint)
     };
-    return await db.insert('habitos', habitData);
+        final id = await db.insert('habitos', habitData);
+    inicioHabitos[id] = DateTime.now();
+    return id;
   }
 
 // AHORA PARA ACTUALIZAR LOS HABITOS (ACTIVARLOS/DESACTIVARLOS) CUANDO SE HAGA CLICK EN EL SWITCH DE LA VISTA 0, Y QUE SE ACTUALICE EN LA BDD
