@@ -6,6 +6,46 @@ import 'bdd.dart';
 // Momento en que se abrió la app: es el punto de partida para contar los intervalos
 final DateTime _inicioApp = DateTime.now();
 
+// Desde cuándo cuenta cada hábito de intervalo. Se borra al pausarlo y se
+// vuelve a crear al reactivarlo, así su contador siempre empieza de cero.
+final Map<int, DateTime> _inicios = {};
+Set<int>? _activosPrevios;
+Timer? _vigilante;
+
+// Compara qué hábitos están activos ahora contra la vez anterior
+Future<void> _vigilarActivaciones() async {
+  final filas = await DatabaseHelper().obtenerHabitos();
+  final activosAhora = filas
+      .where((f) => f['activo'] == 1)
+      .map((f) => f['id'] as int)
+      .toSet();
+
+  final previos = _activosPrevios;
+  if (previos != null) {
+    for (final id in activosAhora) {
+      if (!previos.contains(id)) {
+        _inicios[id] = DateTime.now(); // recién activado o creado: empieza de cero
+      }
+    }
+    for (final id in previos) {
+      if (!activosAhora.contains(id)) {
+        _inicios.remove(id); // pausado o eliminado
+      }
+    }
+  }
+  _activosPrevios = activosAhora;
+}
+
+// Se inicia una sola vez y no se detiene aunque cambies de pantalla
+void _iniciarVigilante() {
+  if (_vigilante != null) return;
+  _vigilarActivaciones();
+  _vigilante = Timer.periodic(
+    const Duration(seconds: 1),
+    (_) => _vigilarActivaciones(),
+  );
+}
+
 // Consejos: se muestra uno distinto cada día
 const List<String> _consejos = [
   'Tómate un vaso de agua nada más levantarte cada mañana para un impulso natural de energía. ¡Sigue así!',
@@ -36,7 +76,6 @@ class _Recordatorio {
   final int hora; // solo semanal
   final int minuto; // solo semanal
   final Set<int> dias; // solo semanal (1 = lunes ... 7 = domingo)
-  final DateTime? inicio; // solo intervalo: desde cuándo cuenta (se reinicia al activarlo)
 
   _Recordatorio({
     required this.id,
@@ -48,14 +87,13 @@ class _Recordatorio {
     this.hora = 0,
     this.minuto = 0,
     this.dias = const {},
-    this.inicio,
   });
 
   // Cuándo suena la próxima vez (null si ya no volverá a sonar)
   DateTime? siguiente(DateTime ahora) {
     final c = cada;
     if (c != null) {
-      final base = inicio ?? _inicioApp;
+      final base = _inicios[id] ?? _inicioApp;
       final ciclos = ahora.difference(base).inMicroseconds ~/ c.inMicroseconds;
       return base.add(c * (ciclos + 1));
     }
@@ -79,7 +117,7 @@ class _Recordatorio {
   int disparados(DateTime desde, DateTime hasta) {
     final c = cada;
     if (c != null) {
-      final base = inicio ?? _inicioApp;
+      final base = _inicios[id] ?? _inicioApp;
       final desdeReal = base.isAfter(desde) ? base : desde;
       return hasta.difference(desdeReal).inMicroseconds ~/ c.inMicroseconds;
     }
@@ -128,6 +166,7 @@ class _Vista1State extends State<Vista1> {
   @override
   void initState() {
     super.initState();
+    _iniciarVigilante();
     _cargarHabitos();
     // Cada segundo se actualiza el contador; cada 5 segundos se vuelve a leer la BDD
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -155,6 +194,7 @@ class _Vista1State extends State<Vista1> {
   }
 
   Future<void> _cargarHabitos() async {
+    await _vigilarActivaciones(); // asegura que los reinicios ya estén registrados
     final db = await DatabaseHelper().database;
     final filas = await DatabaseHelper().obtenerHabitos();
     final semanales = await db.query('h_Semanal');
@@ -199,7 +239,6 @@ class _Vista1State extends State<Vista1> {
             tipo: tipo,
             icono: icono,
             cada: Duration(minutes: minutos),
-            inicio: inicioHabitos[id] ?? _inicioApp,
           ));
         }
       } else if (tipo == 'unico') {
@@ -360,6 +399,12 @@ class _Vista1State extends State<Vista1> {
                 style: const TextStyle(fontSize: 15, color: Colors.white70),
               ),
             ],
+          ),
+          const Spacer(),
+          IconButton(
+            onPressed: _mostrarGuia,
+            tooltip: 'Cómo usar RIN',
+            icon: const Icon(Icons.help_outline, color: Colors.white, size: 28),
           ),
         ],
       ),
@@ -546,6 +591,211 @@ class _Vista1State extends State<Vista1> {
     );
   }
 
+  // ---------- GUÍA DE USO ----------
+  Widget _paso(int numero, IconData icono, String titulo, String texto) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 16,
+            backgroundColor: AppColors.colorBase1,
+            child: Text(
+              '$numero',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(icono, size: 20, color: AppColors.colorBase5),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        titulo,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  texto,
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _mostrarGuia() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.colorBase2,
+      constraints: const BoxConstraints(maxWidth: 600),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => ListView(
+          controller: scrollController,
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Cómo usar RIN',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: AppColors.colorBase1,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Crea tus hábitos y deja que RIN te lo recuerde.',
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 16),
+            _paso(
+              1,
+              Icons.swipe,
+              'Desliza para navegar',
+              'La app tiene 3 pantallas. Desliza hacia los lados (con el dedo o arrastrando con el mouse): a la izquierda está tu lista de hábitos, en el centro esta pantalla principal y a la derecha la de crear recordatorios.',
+            ),
+            _paso(
+              2,
+              Icons.add_alarm,
+              'Crea un recordatorio',
+              'Desliza a la derecha, escribe un nombre y elige el tipo: Intervalo (se repite cada cierto tiempo, por ejemplo cada 30 minutos), Único (una sola vez en una fecha y hora) o Semanal (los días que elijas a una hora fija). Luego presiona el botón de crear.',
+            ),
+            _paso(
+              3,
+              Icons.toggle_on,
+              'Activa o pausa tus hábitos',
+              'Desliza a la izquierda para ver tu lista. Con el interruptor puedes pausar o activar cada hábito. Si reactivas uno de intervalo, su cuenta empieza de cero.',
+            ),
+            _paso(
+              4,
+              Icons.delete_outline,
+              'Elimina los que ya no uses',
+              'En la lista de hábitos, toca el icono de la papelera y confirma para borrar un recordatorio.',
+            ),
+            _paso(
+              5,
+              Icons.timer,
+              'Sigue tu próximo recordatorio',
+              'Aquí, en la pantalla principal, verás cuál es el siguiente recordatorio con su cuenta regresiva, los que vienen después y cuántos has completado.',
+            ),
+            _paso(
+              6,
+              Icons.lightbulb_outline,
+              'Lee el tip del día',
+              'Cada día aparece una frase o consejo nuevo para motivarte a mantener tus buenos hábitos.',
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.colorBase1,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                'Entendido',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tarjetaGuia() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: _decoracion(AppColors.colorBase5),
+      child: Row(
+        children: [
+          const Icon(Icons.menu_book, color: Colors.white, size: 32),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '¿Primera vez en RIN?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  'Aprende a usar la app en un minuto',
+                  style: TextStyle(fontSize: 13, color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: _mostrarGuia,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: AppColors.colorBase5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: const Text(
+              'Ver guía',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ---------- MINI TARJETAS DE RESUMEN ----------
   Widget _miniTarjeta(IconData icono, String valor, String etiqueta) {
     return Expanded(
@@ -619,6 +869,9 @@ class _Vista1State extends State<Vista1> {
                       Icons.check_circle, '$_completados', 'Completados'),
                 ],
               ),
+
+              const SizedBox(height: 16),
+              _tarjetaGuia(),
             ],
           ),
         ),
