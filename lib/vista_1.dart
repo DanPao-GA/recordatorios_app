@@ -869,7 +869,6 @@ class _Vista1State extends State<Vista1> {
                       Icons.check_circle, '$_completados', 'Completados'),
                 ],
               ),
-
               const SizedBox(height: 16),
               _tarjetaGuia(),
             ],
